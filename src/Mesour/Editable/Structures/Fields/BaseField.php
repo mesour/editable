@@ -1,0 +1,110 @@
+<?php
+/**
+ * This file is part of the Mesour Editable (http://components.mesour.com/component/editable)
+ *
+ * Copyright (c) 2016 Matouš Němec (http://mesour.com)
+ *
+ * For full licence and copyright please view the file licence.md in root of this project
+ */
+
+namespace Mesour\Editable\Structures\Fields;
+
+use Mesour;
+
+/**
+ * @author Matouš Němec (http://mesour.com)
+ */
+abstract class BaseField implements IStructureField
+{
+
+	private $name;
+
+	private $title;
+
+	private $disabled = false;
+
+	private $parameters = [];
+
+	private $identifiers = [];
+
+	public function __construct($name)
+	{
+		$this->name = $name;
+	}
+
+	/**
+	 * @param bool $disabled
+	 * @return $this
+	 */
+	public function setDisabled($disabled = true)
+	{
+		$this->disabled = (bool) $disabled;
+		return $this;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isDisabled()
+	{
+		return $this->disabled;
+	}
+
+	public function getName()
+	{
+		return $this->name;
+	}
+
+	public function setTitle($title)
+	{
+		if ($title) {
+			$this->title = $title;
+		}
+		return $this;
+	}
+
+	public function addIdentifier($identifier)
+	{
+		$this->identifiers[] = $identifier;
+		return $this;
+	}
+
+	public function setParameter($key, $value, $persistent = false)
+	{
+		if ($this->hasIdentifiers()) {
+			if ($persistent) {
+				foreach ($this->parameters as $identifier => $val) {
+					$this->parameters[$identifier][$key] = $value;
+				}
+			}
+			$lastIdentifier = end($this->identifiers);
+			$this->parameters[$lastIdentifier][$key] = $value;
+		} else {
+			$this->parameters[$key] = $value;
+		}
+		return $this;
+	}
+
+	public function getParameter($key, $default = null)
+	{
+		return !isset($this->parameters[$key]) ? $default : $this->parameters[$key];
+	}
+
+	public function hasIdentifiers()
+	{
+		return count($this->identifiers) > 0;
+	}
+
+	public function toArray()
+	{
+		return [
+			'name' => $this->getName(),
+			'title' => !$this->title ? $this->getName() : $this->title,
+			'type' => $this->getType(),
+			'params' => $this->parameters,
+		];
+	}
+
+	abstract public function getType();
+
+}

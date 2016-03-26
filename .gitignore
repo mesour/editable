@@ -1,0 +1,8 @@
+.idea
+/vendor
+/composer.lock
+/tests/tmp
+/tests/log
+/examples/log
+/examples/tmp
+/tests/Button/output

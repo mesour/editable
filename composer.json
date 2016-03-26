@@ -1,0 +1,31 @@
+{
+  "name": "mesour/editable",
+  "description": "Mesour Editable component.",
+  "license": ["BSD-3-Clause","GPL-2.0","GPL-3.0"],
+  "keywords": ["inline edit","editable","component"],
+  "homepage": "http://components.mesour.com/component/editable",
+  "authors": [{
+      "name": "Matouš Němec",
+      "homepage": "http://mesour.com"
+    }],
+  "require": {
+    "php": ">=5.5.0",
+    "mesour/components": "3.0.*@beta",
+    "mesour/button": "3.0.*@beta",
+    "mesour/modal": "3.0.*@beta",
+    "mesour/sources": "3.0.*@beta"
+  },
+  "require-dev": {
+    "tracy/tracy": "~2.3.0",
+    "nette/database": "^2.3",
+    "nette/robot-loader": "^2.3",
+    "doctrine/orm": "^2.5",
+    "slevomat/coding-standard": "^1.0",
+    "consistence/coding-standard": "^0.10"
+  },
+  "minimum-stability": "beta",
+  "prefer-stable": true,
+  "autoload": {
+    "classmap": ["src/"]
+  }
+}
