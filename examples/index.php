@@ -109,14 +109,14 @@ $structure = \Mesour\Editable\Structures\DataStructure::fromSource($source);
 
 $groupsElement = $structure->getElement('groups');
 
-$groupsElement->addText('name', 'Name', 0);
+$groupsElement->addText('name', 'Name');
 
-$groupsElement->addText('type', 'Type', 0);
+$groupsElement->addText('type', 'Type');
 
-$groupsElement->addDate('date', 'Date', 0)
+$groupsElement->addDate('date', 'Date')
 	->setFormat('Y-m-d H:i:s');
 
-$groupsElement->addNumber('members', 'Members', 0)
+$groupsElement->addNumber('members', 'Members')
 	->setUnit('EUR')
 	->setDecimals(2)
 	->setDecimalPoint(',')
@@ -124,16 +124,16 @@ $groupsElement->addNumber('members', 'Members', 0)
 
 $addressesElement = $structure->getElement('user_addresses');
 
-$addressesElement->addText('street', 'Street', 0);
-$addressesElement->addText('city', 'City', 0);
-$addressesElement->addText('zip', 'Zip', 0);
-$addressesElement->addText('country', 'Country', 0);
+$addressesElement->addText('street', 'Street');
+$addressesElement->addText('city', 'City');
+$addressesElement->addText('zip', 'Zip');
+$addressesElement->addText('country', 'Country');
 
 $companiesElement = $structure->getElement('companies');
 
-$companiesElement->addText('name', 'Name', 0);
-$companiesElement->addText('reg_num', 'Reg. number', 0);
-$companiesElement->addBool('verified', 'Verified', 0);
+$companiesElement->addText('name', 'Name');
+$companiesElement->addText('reg_num', 'Reg. number');
+$companiesElement->addBool('verified', 'Verified');
 
 function createForUser(\Mesour\Editable\Structures\IDataStructure $structure, $userId)
 {

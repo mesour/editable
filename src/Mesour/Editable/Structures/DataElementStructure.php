@@ -148,29 +148,17 @@ class DataElementStructure implements IDataElementStructure
 	protected function createField($class, $name, $title, $identifier)
 	{
 		/** @var Fields\IStructureField $field */
-		if (!is_null($identifier)) {
-			if ($this->hasField($name)) {
-				$field = $this->getField($name);
-				if (!$field->hasIdentifiers()) {
-					throw new Mesour\InvalidArgumentException(
-						sprintf(
-							'Can not set editable field "%s" without identifier and after set with identifier.',
-							$name
-						)
-					);
-				}
-			} else {
-				$field = new $class($name);
-				$this->addField($field);
-			}
-			$field->addIdentifier($identifier);
-			$field->setParameter('id', $identifier);
-			$field->setTitle($title);
+		if ($this->hasField($name)) {
+			$field = $this->getField($name);
 		} else {
 			$field = new $class($name);
-			$field->setTitle($title);
 			$this->addField($field);
 		}
+
+		$identifier = $identifier ?: 0;
+		$field->addIdentifier($identifier);
+		$field->setParameter('id', $identifier);
+		$field->setTitle($title);
 		if (!$this->inInitializing) {
 			$field->setDisabled(false);
 		} else {
@@ -179,13 +167,8 @@ class DataElementStructure implements IDataElementStructure
 		return $field;
 	}
 
-	protected function addField(Fields\IStructureField $field)
+	private function addField(Fields\IStructureField $field)
 	{
-		if ($this->hasField($field->getName())) {
-			throw new Mesour\InvalidArgumentException(
-				sprintf('Field with name %s already exits.', $field->getName())
-			);
-		}
 		$this->fields[$field->getName()] = $field;
 	}
 
