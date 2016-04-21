@@ -10,9 +10,9 @@
 namespace Mesour\Editable\Structures;
 
 use Mesour;
-use Mesour\Editable\Structures\Fields\IStructureField;
-use Mesour\Editable\Structures\Fields\IStructureElementField;
 use Mesour\Editable\Structures\Fields\IManyToManyField;
+use Mesour\Editable\Structures\Fields\IStructureElementField;
+use Mesour\Editable\Structures\Fields\IStructureField;
 
 /**
  * @author Matouš Němec (http://mesour.com)
@@ -38,7 +38,7 @@ class PermissionsChecker
 		self::ATTACH,
 	];
 
-	private static $permissionError = 'You have not permission for this action.';
+	public static $permissionError = 'You have not permission for this action.';
 
 	public static function check($method, Mesour\UI\Editable $editable, IStructureField $field)
 	{
@@ -135,7 +135,7 @@ class PermissionsChecker
 			&& $field instanceof Mesour\Editable\Structures\Fields\ManyToOneField
 			&& !$field->hasEditCurrentRowEnabled()
 		) {
-			throw new Mesour\InvalidArgumentException(
+			throw new Mesour\InvalidStateException(
 				sprintf('Field `%s` have not enabled edit current row.', $field->getName())
 			);
 		}

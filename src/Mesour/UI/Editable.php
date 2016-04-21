@@ -10,9 +10,9 @@
 namespace Mesour\UI;
 
 use Mesour;
+use Mesour\Editable\Structures\PermissionsChecker;
 use Nette\Utils\Json;
 use Nette\Utils\Strings;
-use Mesour\Editable\Structures\PermissionsChecker;
 
 /**
  * @author Matouš Němec (http://mesour.com)
@@ -30,6 +30,8 @@ class Editable extends Mesour\Components\Control\AttributesControl
 	const WRAPPER = 'wrapper';
 
 	private $disabled = false;
+
+	public static $debugMode = false;
 
 	/**
 	 * @var Mesour\Editable\Structures\IDataStructure
@@ -502,6 +504,9 @@ class Editable extends Mesour\Components\Control\AttributesControl
 
 	protected function processError(Mesour\Editable\ValidatorException $exception)
 	{
+		if (self::$debugMode) {
+			throw $exception;
+		}
 		$this->getPayload()->set(
 			'error',
 			[

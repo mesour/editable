@@ -194,7 +194,7 @@ class DataStructure extends DataElementStructure implements IDataStructure
 			if ($isManyToOne || $type === IColumnStructure::ONE_TO_ONE) {
 				/** @var OneToOneColumnStructure|ManyToOneColumnStructure $column */
 				/** @var Fields\OneToOneField $field */
-				if($isManyToOne) {
+				if ($isManyToOne) {
 					$field = $dataStrucute->addManyToOne($column->getName(), null, 0);
 				} else {
 					$field = $dataStrucute->addOneToOne($column->getName(), null, 0);

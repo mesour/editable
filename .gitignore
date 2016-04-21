@@ -1,9 +1,11 @@
 .idea
 /vendor
 /composer.lock
-/tests/tmp
+/tmp
 /tests/log
+/tests/environment.php
+/tests/config.local.php
 /examples/log
 /examples/tmp
-/tests/Button/output
+/tests/Mesour/EditableTests/output
 /examples/environment.php

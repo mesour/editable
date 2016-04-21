@@ -51,7 +51,7 @@ interface IStructureElementField extends IStructureField
 	public function setRemovePermission($resource, $privilege);
 
 	/**
-	 * @param $role
+	 * @param string $role
 	 * @param Mesour\Components\Security\IAuthorizator $authorizator
 	 * @return bool
 	 */

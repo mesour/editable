@@ -64,7 +64,7 @@ abstract class BaseField implements IStructureField
 	}
 
 	/**
-	 * @param $role
+	 * @param string $role
 	 * @param Mesour\Components\Security\IAuthorizator $authorizator
 	 * @return bool
 	 */

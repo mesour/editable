@@ -31,7 +31,7 @@ interface IManyToManyField extends IStructureElementField
 	public function setAttachPermission($resource, $privilege);
 
 	/**
-	 * @param $role
+	 * @param string $role
 	 * @param Mesour\Components\Security\IAuthorizator $authorizator
 	 * @return bool
 	 */

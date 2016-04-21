@@ -28,7 +28,7 @@ interface IStructureField
 	public function isDisabled();
 
 	/**
-	 * @param $role
+	 * @param string $role
 	 * @param Mesour\Components\Security\IAuthorizator $authorizator
 	 * @return bool
 	 */

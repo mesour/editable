@@ -94,7 +94,7 @@ abstract class BaseElementField extends BaseField implements IStructureElementFi
 	}
 
 	/**
-	 * @param $role
+	 * @param string $role
 	 * @param Mesour\Components\Security\IAuthorizator $authorizator
 	 * @return bool
 	 */
