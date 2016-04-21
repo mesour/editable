@@ -17,6 +17,8 @@ use Mesour;
 class DateField extends BaseField
 {
 
+	use Mesour\Sources\Structures\Nullable;
+
 	private $format = 'Y-m-d';
 
 	public function setFormat($format)
@@ -30,6 +32,7 @@ class DateField extends BaseField
 		$out = parent::toArray();
 
 		$out['format'] = Mesour\Components\Utils\Helpers::convertDateToJsFormat($this->format);
+		$out['nullable'] = $this->isNullable();
 
 		return $out;
 	}

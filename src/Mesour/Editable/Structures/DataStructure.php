@@ -11,6 +11,8 @@ namespace Mesour\Editable\Structures;
 
 use Mesour;
 use Mesour\Sources\Structures\Columns\IColumnStructure;
+use Mesour\Sources\Structures\Columns\ManyToOneColumnStructure;
+use Mesour\Sources\Structures\Columns\OneToOneColumnStructure;
 
 /**
  * @author Matouš Němec (http://mesour.com)
@@ -70,6 +72,17 @@ class DataStructure extends DataElementStructure implements IDataStructure
 	public function addOneToOne($name, $title = null, $identifier = null)
 	{
 		return $this->createField(Fields\OneToOneField::class, $name, $title, $identifier);
+	}
+
+	/**
+	 * @param string $name
+	 * @param null|string $title
+	 * @param null|mixed $identifier
+	 * @return Fields\ManyToOneField
+	 */
+	public function addManyToOne($name, $title = null, $identifier = null)
+	{
+		return $this->createField(Fields\ManyToOneField::class, $name, $title, $identifier);
 	}
 
 	/**
@@ -177,15 +190,23 @@ class DataStructure extends DataElementStructure implements IDataStructure
 		}
 		foreach ($source->getDataStructure()->getColumns() as $column) {
 			$type = $column->getType();
-			if ($type === IColumnStructure::ONE_TO_ONE) {
-				/** @var Mesour\Sources\Structures\Columns\OneToOneColumnStructure $column */
+			$isManyToOne = $type === IColumnStructure::MANY_TO_ONE;
+			if ($isManyToOne || $type === IColumnStructure::ONE_TO_ONE) {
+				/** @var OneToOneColumnStructure|ManyToOneColumnStructure $column */
 				/** @var Fields\OneToOneField $field */
-				$field = $dataStrucute->addOneToOne($column->getName(), null, 0);
+				if($isManyToOne) {
+					$field = $dataStrucute->addManyToOne($column->getName(), null, 0);
+				} else {
+					$field = $dataStrucute->addOneToOne($column->getName(), null, 0);
+				}
+
+				$field->setNullable($column->isNullable());
 				$tableStrucure = $column->getTableStructure();
 				$field->setReference(
 					$tableStrucure->getName(),
 					$tableStrucure->getPrimaryKey(),
-					$column->getReferencedColumn()
+					$column->getReferencedColumn(),
+					$column->getPattern()
 				);
 			} elseif ($type === IColumnStructure::ONE_TO_MANY) {
 				/** @var Mesour\Sources\Structures\Columns\OneToManyColumnStructure $column */
@@ -222,11 +243,11 @@ class DataStructure extends DataElementStructure implements IDataStructure
 	protected static function detectBaseTypes($type, IDataElementStructure $elementStructure, IColumnStructure $column)
 	{
 		if ($type === IColumnStructure::TEXT) {
-			$elementStructure->addText($column->getName(), null, 0);
+			$field = $elementStructure->addText($column->getName(), null, 0);
 		} elseif ($type === IColumnStructure::NUMBER) {
-			$elementStructure->addNumber($column->getName(), null, 0);
+			$field = $elementStructure->addNumber($column->getName(), null, 0);
 		} elseif ($type === IColumnStructure::DATE) {
-			$elementStructure->addDate($column->getName(), null, 0);
+			$field = $elementStructure->addDate($column->getName(), null, 0);
 		} elseif ($type === IColumnStructure::ENUM) {
 			/** @var Mesour\Sources\Structures\Columns\EnumColumnStructure $column */
 			$field = $elementStructure->addEnum($column->getName(), null, 0);
@@ -235,9 +256,18 @@ class DataStructure extends DataElementStructure implements IDataStructure
 				$field->addValue($value);
 			}
 		} elseif ($type === IColumnStructure::BOOL) {
-			$elementStructure->addBool($column->getName(), null, 0);
+			$field = $elementStructure->addBool($column->getName(), null, 0);
 		} else {
 			throw new Mesour\InvalidArgumentException(sprintf('Type %s is not recognized.', $type));
+		}
+
+		if (method_exists($field, 'setNullable')) {
+			if (!method_exists($column, 'isNullable')) {
+				throw new Mesour\InvalidStateException(
+					sprintf('Method isNullable missing on column `%s`.', $column->getName())
+				);
+			}
+			$field->setNullable($column->isNullable());
 		}
 	}
 

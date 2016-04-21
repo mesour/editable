@@ -27,6 +27,20 @@ interface IStructureField
 	 */
 	public function isDisabled();
 
+	/**
+	 * @param $role
+	 * @param Mesour\Components\Security\IAuthorizator $authorizator
+	 * @return bool
+	 */
+	public function isAllowedEdit($role, Mesour\Components\Security\IAuthorizator $authorizator);
+
+	/**
+	 * @param string $resource
+	 * @param string $privilege
+	 * @return mixed
+	 */
+	public function setEditPermission($resource, $privilege);
+
 	public function getName();
 
 	public function getType();
@@ -47,6 +61,11 @@ interface IStructureField
 	public function getParameter($key, $default = null);
 
 	public function setTitle($title);
+
+	/**
+	 * @return array
+	 */
+	public function getAllowedMethods();
 
 	/**
 	 * @return array

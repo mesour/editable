@@ -38,6 +38,14 @@ interface IDataStructure extends IDataElementStructure
 	/**
 	 * @param string $name
 	 * @param null|string $title
+	 * @param null|mixed $identifier
+	 * @return Fields\ManyToOneField
+	 */
+	public function addManyToOne($name, $title = null, $identifier = null);
+
+	/**
+	 * @param string $name
+	 * @param null|string $title
 	 * @param null $identifier
 	 * @return Fields\OneToManyField
 	 */

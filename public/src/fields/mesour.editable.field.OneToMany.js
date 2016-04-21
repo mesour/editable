@@ -97,6 +97,10 @@ mesour._editable.fields = !mesour._editable.fields ? {} : mesour._editable.field
             })
         });
 
+        this.getElement = function() {
+            return element;
+        };
+
         this.getValue = function () {
             return getDefaultValues();
         };

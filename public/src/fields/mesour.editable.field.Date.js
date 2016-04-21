@@ -5,42 +5,51 @@ var mesour = !mesour ? {} : mesour;
 mesour._editable = !mesour._editable ? {} : mesour._editable;
 mesour._editable.fields = !mesour._editable.fields ? {} : mesour._editable.fields;
 
-(function ($) {
+(function($) {
 
-    mesour._editable.fields.Date = function (fieldStructure, editable, element, parameters, identifier) {
+	mesour._editable.fields.Date = function(fieldStructure, editable, element, parameters, identifier, value) {
 
-        this.TYPE = editable.TYPE_DATE;
+		this.TYPE = editable.TYPE_DATE;
 
-        parameters = parameters || {};
+		parameters = parameters || {};
 
-        var text = new mesour._editable.fields.Text(fieldStructure, editable, element, parameters, identifier);
+		var text = new mesour._editable.fields.Text(fieldStructure, editable, element, parameters, identifier, true);
 
-        var _this = this,
-            fieldName = fieldStructure['name'],
-            format = fieldStructure['format'],
-            input = text.getInput();
+		var _this = this,
+			fieldName = fieldStructure['name'],
+			format = fieldStructure['format'],
+			input = text.getInput();
 
-        element.parent().css('position', 'relative');
+		element.parent().css('position', 'relative');
 
-        var oldValue = input.val();
-        input.val(!oldValue || oldValue === '-' ? '' : oldValue);
-        mesour.dateTimePicker.create(input, format, true);
-        mesour.dateTimePicker.show(input);
+		var oldValue = value;
+		input.val(!oldValue || oldValue === '-' ? '' : oldValue);
+		input.attr('data-is-date', 'true');
+		input.attr('placeholder', format);
 
-        this.getValue = function () {
-            return text.getValue();
-        };
+		mesour.dateTimePicker.create(input, format, true);
+		mesour.dateTimePicker.show(input);
 
-        this.reset = function () {
-            mesour.dateTimePicker.destroy(input);
-            text.reset();
-        };
+		this.getElement = function() {
+			return element;
+		};
 
-        this.save = function () {
-            mesour.dateTimePicker.destroy(input);
-            text.save();
-        };
+		this.getValue = function() {
+			var out = text.getValue();
+			out['oldValue'] = oldValue;
+			return out;
+		};
 
-    };
+		this.reset = function() {
+			mesour.dateTimePicker.destroy(input);
+			text.reset();
+		};
+
+		this.save = function() {
+			mesour.dateTimePicker.destroy(input);
+			text.save();
+		};
+
+	};
 
 })(jQuery);

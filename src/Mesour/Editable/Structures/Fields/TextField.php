@@ -17,9 +17,28 @@ use Mesour;
 class TextField extends BaseField
 {
 
+	use Mesour\Sources\Structures\Nullable;
+
+	private $hasTextarea = false;
+
+	public function setTextarea($textarea = true)
+	{
+		$this->hasTextarea = $textarea;
+		return $this;
+	}
+
 	public function getType()
 	{
 		return Mesour\Sources\Structures\Columns\IColumnStructure::TEXT;
 	}
 
+	public function toArray()
+	{
+		$out = parent::toArray();
+
+		$out['nullable'] = $this->isNullable();
+		$out['hasTextarea'] = !$this->hasTextarea ? 'false' : 'true';
+
+		return $out;
+	}
 }

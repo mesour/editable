@@ -27,6 +27,8 @@ abstract class BaseField implements IStructureField
 
 	private $identifiers = [];
 
+	private $editPermission;
+
 	public function __construct($name)
 	{
 		$this->name = $name;
@@ -48,6 +50,41 @@ abstract class BaseField implements IStructureField
 	public function isDisabled()
 	{
 		return $this->disabled;
+	}
+
+	/**
+	 * @param string $resource
+	 * @param string $privilege
+	 * @return $this
+	 */
+	public function setEditPermission($resource, $privilege)
+	{
+		$this->editPermission = [$resource, $privilege];
+		return $this;
+	}
+
+	/**
+	 * @param $role
+	 * @param Mesour\Components\Security\IAuthorizator $authorizator
+	 * @return bool
+	 */
+	public function isAllowedEdit($role, Mesour\Components\Security\IAuthorizator $authorizator)
+	{
+		return $this->checkIsAllowed($this->editPermission, $role, $authorizator);
+	}
+
+	/**
+	 * @param array|null $permission
+	 * @param mixed $role
+	 * @param Mesour\Components\Security\IAuthorizator $authorizator
+	 * @return bool
+	 */
+	protected function checkIsAllowed($permission, $role, Mesour\Components\Security\IAuthorizator $authorizator)
+	{
+		return !$permission || Mesour\Components\Utils\Helpers::invokeArgs(
+			[$authorizator, 'isAllowed'],
+			array_merge([$role], $permission)
+		);
 	}
 
 	public function getName()
@@ -103,6 +140,11 @@ abstract class BaseField implements IStructureField
 			'type' => $this->getType(),
 			'params' => $this->parameters,
 		];
+	}
+
+	public function getAllowedMethods()
+	{
+		return [Mesour\Editable\Structures\PermissionsChecker::EDIT];
 	}
 
 	abstract public function getType();

@@ -12,6 +12,7 @@ namespace Mesour\UI;
 use Mesour;
 use Nette\Utils\Json;
 use Nette\Utils\Strings;
+use Mesour\Editable\Structures\PermissionsChecker;
 
 /**
  * @author Matouš Němec (http://mesour.com)
@@ -20,7 +21,7 @@ use Nette\Utils\Strings;
  * @method null onCreate(\Mesour\Editable\Structures\Fields\IStructureElementField $field, array $newValues, $identifier = null, array $params = [])
  * @method null onRemove(\Mesour\Editable\Structures\Fields\IStructureElementField $field, $value, $identifier = null)
  * @method null onAttach(\Mesour\Editable\Structures\Fields\IStructureElementField $field, \Mesour\Editable\Structures\Reference $reference, $identifier = null, array $params = [])
- * @method null onEditField(\Mesour\Editable\Structures\Fields\IStructureField $field, $newValue, $oldValue, $identifier = null, array $params = [])
+ * @method null onEditField(\Mesour\Editable\Structures\Fields\IStructureField $field, $newValue, $oldValue = null, $identifier = null, array $params = [])
  * @method null onEditElement(\Mesour\Editable\Structures\Fields\IStructureElementField $field, array $values, array $oldValues, \Mesour\Editable\Structures\Reference $reference, $identifier = null, array $params = [])
  */
 class Editable extends Mesour\Components\Control\AttributesControl
@@ -34,6 +35,10 @@ class Editable extends Mesour\Components\Control\AttributesControl
 	 * @var Mesour\Editable\Structures\IDataStructure
 	 */
 	private $dataStructure;
+
+	private $inline = false;
+
+	private $disabledInlineAlerts = false;
 
 	public $onRender = [];
 
@@ -65,6 +70,37 @@ class Editable extends Mesour\Components\Control\AttributesControl
 		);
 
 		$this->addComponent(new Modal('modal'));
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isInline()
+	{
+		return $this->inline;
+	}
+
+	/**
+	 * @param bool $inline
+	 */
+	public function setInline($inline = true)
+	{
+		$this->inline = $inline;
+		return $this;
+	}
+
+	/**
+	 * @return boolean
+	 */
+	public function isDisabledInlineAlerts()
+	{
+		return $this->disabledInlineAlerts;
+	}
+
+	public function disableInlineAlerts()
+	{
+		$this->disabledInlineAlerts = true;
+		return $this;
 	}
 
 	public function setDataStructure(Mesour\Editable\Structures\IDataElementStructure $dataStructure)
@@ -152,10 +188,12 @@ class Editable extends Mesour\Components\Control\AttributesControl
 		return $wrapper;
 	}
 
-	public function handleEdit($name, $newValue, $oldValue, $identifier = null, array $params = [])
+	public function handleEdit($name, $newValue, $oldValue = null, $identifier = null, array $params = [])
 	{
 		try {
 			$currentField = $this->getDataStructure()->getField($name);
+
+			PermissionsChecker::check(PermissionsChecker::EDIT, $this, $currentField);
 
 			$this->onEditField(
 				$currentField,
@@ -164,7 +202,6 @@ class Editable extends Mesour\Components\Control\AttributesControl
 				is_numeric($identifier) ? (int) $identifier : $identifier,
 				$params
 			);
-
 		} catch (Mesour\Editable\ValidatorException $e) {
 			$this->processError($e);
 		}
@@ -177,10 +214,12 @@ class Editable extends Mesour\Components\Control\AttributesControl
 		array $oldValues,
 		array $params = [],
 		array $reference = []
-	)
-	{
+	) {
 		try {
 			$currentField = $this->getDataStructure()->getField($name);
+
+			PermissionsChecker::check(PermissionsChecker::EDIT_FORM, $this, $currentField);
+
 			$fieldReference = $currentField->getReference();
 
 			foreach ($this->getDataStructure()->getElement($fieldReference['table'])->getFields() as $field) {
@@ -219,7 +258,6 @@ class Editable extends Mesour\Components\Control\AttributesControl
 				is_numeric($identifier) ? (int) $identifier : $identifier,
 				$params
 			);
-
 		} catch (Mesour\Editable\ValidatorException $e) {
 			$this->processError($e);
 		}
@@ -229,6 +267,9 @@ class Editable extends Mesour\Components\Control\AttributesControl
 	{
 		try {
 			$currentField = $this->getDataStructure()->getField($name);
+
+			PermissionsChecker::check(PermissionsChecker::CREATE, $this, $currentField);
+
 			$reference = $currentField->getReference();
 
 			$newValues = [];
@@ -244,7 +285,6 @@ class Editable extends Mesour\Components\Control\AttributesControl
 				is_numeric($identifier) ? (int) $identifier : $identifier,
 				$params
 			);
-
 		} catch (Mesour\Editable\ValidatorException $e) {
 			$this->processError($e);
 		}
@@ -255,12 +295,13 @@ class Editable extends Mesour\Components\Control\AttributesControl
 		try {
 			$currentField = $this->getDataStructure()->getField($name);
 
+			PermissionsChecker::check(PermissionsChecker::REMOVE, $this, $currentField);
+
 			$this->onRemove(
 				$currentField,
 				is_numeric($value) ? (int) $value : $value,
 				is_numeric($identifier) ? (int) $identifier : $identifier
 			);
-
 		} catch (Mesour\Editable\ValidatorException $e) {
 			$this->processError($e);
 		}
@@ -270,6 +311,8 @@ class Editable extends Mesour\Components\Control\AttributesControl
 	{
 		try {
 			$currentField = $this->getDataStructure()->getField($name);
+
+			PermissionsChecker::check(PermissionsChecker::ATTACH, $this, $currentField);
 
 			$referenceInstance = new Mesour\Editable\Structures\Reference(
 				$reference['column']['name'],
@@ -282,7 +325,6 @@ class Editable extends Mesour\Components\Control\AttributesControl
 			}
 
 			$this->onAttach($currentField, $referenceInstance, $identifier, $params);
-
 		} catch (Mesour\Editable\ValidatorException $e) {
 			$this->processError($e);
 		}
@@ -301,13 +343,13 @@ class Editable extends Mesour\Components\Control\AttributesControl
 			->getSource()
 			->getReferencedSource($table);
 
-		$this->getPayload()->set('data', $source->fetchAll());
+		$this->getPayload()->set('data', $this->fixDataForPayload($source->fetchAll()));
 
 		if ($referencedTable) {
 			$referencedSource = $this->getDataStructure()
 				->getSource()
 				->getReferencedSource($referencedTable);
-			$this->getPayload()->set('reference', $referencedSource->fetchAll());
+			$this->getPayload()->set('reference', $this->fixDataForPayload($referencedSource->fetchAll()));
 		}
 
 		$this->getPayload()->sendPayload();
@@ -329,12 +371,41 @@ class Editable extends Mesour\Components\Control\AttributesControl
 		$this->getPayload()->sendPayload();
 	}
 
+	protected function fixDataForPayload(array $data)
+	{
+		$out = [];
+		foreach ($data as $key => $row) {
+			$rowData = $row;
+			foreach ($row as $column => $value) {
+				if ($value instanceof \DateTime) {
+					$rowData[$column] = $value->format('Y-m-d H:i:s');
+				}
+			}
+			$out[] = $rowData;
+		}
+		return $out;
+	}
+
+	protected function checkField(Mesour\Editable\Structures\Fields\IStructureField $structureField)
+	{
+		if ($structureField->isDisabled()) {
+			throw new Mesour\InvalidStateException(
+				sprintf('Field %s has not enabled attach existing row.', $structureField->getName())
+			);
+		}
+	}
+
 	protected function createCoreScript()
 	{
 		$outScript = 'var mesour = !mesour ? {} : mesour;';
 		$outScript .= 'mesour.editable = !mesour.editable ? [] : mesour.editable;';
 
-		$outScript .= 'mesour.editable.push(["enable","' . $this->createLinkName() . '"]);';
+		$outScript .= sprintf(
+			'mesour.editable.push(["enable","%s","%s","%s"]);',
+			$this->createLinkName(),
+			$this->isInline() ? 'true' : 'false',
+			$this->isDisabledInlineAlerts() ? 'true' : 'false'
+		);
 
 		$translates = [
 			'select' => $this->getTranslator()->translate('Select...'),
@@ -345,6 +416,14 @@ class Editable extends Mesour\Components\Control\AttributesControl
 			'createNew' => $this->getTranslator()->translate('Create new'),
 			'dataSaved' => $this->getTranslator()->translate('Successfuly saved'),
 			'invalidNumber' => $this->getTranslator()->translate('Value must be valid number'),
+			'statusError' => $this->getTranslator()->translate('ERROR! Status: %status%. Try save data later.'),
+			'emptyValue' => $this->getTranslator()->translate('- none'),
+			'saveEmptyValue' => $this->getTranslator()->translate('Really save empty value?'),
+			'saveItem' => $this->getTranslator()->translate('Save'),
+			'cancelEdit' => $this->getTranslator()->translate('Cancel'),
+			'editItem' => $this->getTranslator()->translate('Edit in form'),
+			'reset' => $this->getTranslator()->translate('Cancel'),
+			'emptyButton' => $this->getTranslator()->translate('Set empty value'),
 		];
 		$outScript .= 'mesour.editable.push(["setTranslations",' . Json::encode($translates) . ']);';
 
@@ -353,9 +432,34 @@ class Editable extends Mesour\Components\Control\AttributesControl
 
 	protected function fixValue(Mesour\Editable\Structures\Fields\IStructureField $elementField, $value)
 	{
+		if (is_null($value)) {
+			return null;
+		}
+
 		if ($elementField->getType() === Mesour\Sources\Structures\Columns\IColumnStructure::TEXT) {
 			return Strings::trim($value);
+		} elseif ($elementField->getType() === Mesour\Sources\Structures\Columns\IColumnStructure::ENUM) {
+			/** @var Mesour\Editable\Structures\Fields\EnumField $elementField */
+			$values = $elementField->getValues();
+			$isValueAllowed = isset($values[$value]);
+			if ($elementField->isNullable() && !$value && !$isValueAllowed) {
+				return null;
+			}
+			if (!$isValueAllowed) {
+				throw new Mesour\OutOfRangeException(
+					sprintf('Enum value %s does not exist on %s field.', $value, $elementField->getName())
+				);
+			}
+			return $value;
 		} elseif ($elementField->getType() === Mesour\Sources\Structures\Columns\IColumnStructure::NUMBER) {
+			/** @var Mesour\Editable\Structures\Fields\NumberField $elementField */
+			if (!$value && !is_numeric($value)) {
+				if (!$elementField->isNullable()) {
+					return 0;
+				}
+				return null;
+			}
+
 			if (
 				(method_exists($elementField, 'getDecimals') && $elementField->getDecimals() === 0)
 				|| strpos($value, '.') === -1
@@ -364,7 +468,10 @@ class Editable extends Mesour\Components\Control\AttributesControl
 			}
 			return (double) $value;
 		} elseif ($elementField->getType() === Mesour\Sources\Structures\Columns\IColumnStructure::DATE) {
-			if ($value && !$value instanceof \DateTime) {
+			/** @var Mesour\Editable\Structures\Fields\DateField $elementField */
+			if (!$value && $elementField->isNullable()) {
+				return null;
+			} elseif ($value && !$value instanceof \DateTime) {
 				try {
 					if (is_numeric($value)) {
 						$dateTime = new \DateTime();
@@ -378,7 +485,16 @@ class Editable extends Mesour\Components\Control\AttributesControl
 					throw $exception;
 				}
 			}
+		} elseif ($elementField->getType() === Mesour\Sources\Structures\Columns\IColumnStructure::ONE_TO_ONE) {
+			/** @var Mesour\Editable\Structures\Fields\OneToOneField $elementField */
+			if (!$value && $elementField->isNullable()) {
+				return null;
+			}
 		} elseif ($elementField->getType() === Mesour\Sources\Structures\Columns\IColumnStructure::BOOL) {
+			/** @var Mesour\Editable\Structures\Fields\BoolField $elementField */
+			if (Strings::length($value) === 0 && $elementField->isNullable()) {
+				return null;
+			}
 			return !$value || $value === 'false' ? false : true;
 		}
 		return $value;
@@ -386,10 +502,13 @@ class Editable extends Mesour\Components\Control\AttributesControl
 
 	protected function processError(Mesour\Editable\ValidatorException $exception)
 	{
-		$this->getPayload()->set('error', [
-			'message' => $this->getTranslator()->translate($exception->getMessage()),
-			'field' => $exception->getFieldName(),
-		]);
+		$this->getPayload()->set(
+			'error',
+			[
+				'message' => $this->getTranslator()->translate($exception->getMessage()),
+				'field' => $exception->getFieldName(),
+			]
+		);
 		$this->getPayload()->sendPayload();
 	}
 

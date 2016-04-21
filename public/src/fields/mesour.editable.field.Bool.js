@@ -5,53 +5,86 @@ var mesour = !mesour ? {} : mesour;
 mesour._editable = !mesour._editable ? {} : mesour._editable;
 mesour._editable.fields = !mesour._editable.fields ? {} : mesour._editable.fields;
 
-(function ($) {
+(function($) {
 
-    mesour._editable.fields.Bool = function (fieldStructure, editable, element, parameters, identifier, value) {
+	mesour._editable.fields.Bool = function(fieldStructure, editable, element, parameters, identifier, value) {
 
-        this.TYPE = editable.TYPE_TEXT;
+		this.TYPE = editable.TYPE_TEXT;
 
-        parameters = parameters || {};
+		parameters = parameters || {};
 
-        var _this = this,
-            fieldName = fieldStructure['name'],
-            oldValue = element.text(),
-            input = $('<input type="checkbox" value="1">'),
-            reset = function () {
-                element.empty().text(oldValue);
-            };
+		var _this = this,
+			fieldName = fieldStructure['name'],
+			description = fieldStructure['description'],
+			nullable = fieldStructure['nullable'],
+			oldValue = element.text(),
+			prependButtons = [],
+			input = $('<input type="checkbox" value="1" id="editable-bool">'),
+			label = $('<label for="editable-bool">'),
+			getInputValue = function() {
+				return input.is(':checked');
+			};
 
-        input.on('change.mesour-editable', function (e) {
-            var $this = $(this);
-            editable.save(fieldName, identifier);
-        });
+		if (nullable) {
+			var emptyButton = $('<button class="btn btn-warning" title="'+editable.getEditableWidget().getTranslate('emptyButton')+'"><i class="fa fa-ban"></i></button>');
+			prependButtons = [emptyButton];
 
-        if (value == 1 || value === 'true' || value === true) {
-            input.prop('checked', true);
-        }
+			emptyButton.on('click', function(e) {
+				e.preventDefault();
 
-        element.empty().append(input);
+				if (confirm(editable.getEditableWidget().getTranslate('saveEmptyValue'))) {
+					getInputValue = function() {
+						return '';
+					};
+					input.prop('checked', false);
+					editable.save(fieldName, identifier);
+				}
+			});
+		}
 
-        this.getInput = function () {
-            return input;
-        };
+		var popover = new mesour._editable.EditablePopover(editable, element, input, _this, false, prependButtons),
+			reset = function() {
+				popover.destroy();
+			};
 
-        this.getValue = function () {
-            return {
-                oldValue: value,
-                value: input.is(':checked'),
-                params: parameters
-            };
-        };
+		popover.onSave(function(e) {
+			editable.save(fieldName, identifier);
+		});
+		popover.onReset(function(e) {
+			reset();
+		});
 
-        this.reset = function () {
-            reset();
-        };
+		if (value == 1 || value === 'true' || value === true) {
+			input.prop('checked', true);
+		}
 
-        this.save = function () {
-            element.empty().text(input.is(':checked') ? 'Yes' : 'No');
-        };
+		input.wrap(label);
+		input.after(' ' + description);
 
-    };
+		this.getElement = function() {
+			return element;
+		};
+
+		this.getInput = function() {
+			return input;
+		};
+
+		this.getValue = function() {
+			return {
+				oldValue: value,
+				value: getInputValue(),
+				params: parameters
+			};
+		};
+
+		this.reset = function() {
+			reset();
+		};
+
+		this.save = function() {
+			popover.destroy();
+		};
+
+	};
 
 })(jQuery);

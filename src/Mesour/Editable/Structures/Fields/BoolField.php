@@ -17,9 +17,31 @@ use Mesour;
 class BoolField extends BaseField
 {
 
+	use Mesour\Sources\Structures\Nullable;
+
+	private $description;
+
+	public function setDescription($description)
+	{
+		$this->description = $description;
+		return $this;
+	}
+
 	public function getType()
 	{
 		return Mesour\Sources\Structures\Columns\IColumnStructure::BOOL;
+	}
+
+	public function toArray()
+	{
+		$out = parent::toArray();
+
+		$out['nullable'] = $this->isNullable();
+
+		//todo: translate description
+		$out['description'] = $this->description ?: $this->getName();
+
+		return $out;
 	}
 
 }

@@ -17,6 +17,8 @@ use Mesour;
 class NumberField extends BaseField
 {
 
+	use Mesour\Sources\Structures\Nullable;
+
 	private $unit = null;
 
 	private $separator = ',';
@@ -62,6 +64,7 @@ class NumberField extends BaseField
 		$out['separator'] = $this->separator;
 		$out['decimalPoint'] = $this->decimalPoint;
 		$out['decimals'] = $this->decimals;
+		$out['nullable'] = $this->isNullable();
 
 		return $out;
 	}

@@ -190,6 +190,10 @@ mesour._editable.fields = !mesour._editable.fields ? {} : mesour._editable.field
             })
         }, referencedTable);
 
+        this.getElement = function() {
+            return element;
+        };
+
         this.getValue = function () {
             return getDefaultValues();
         };

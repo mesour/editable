@@ -21,6 +21,42 @@ interface IStructureElementField extends IStructureField
 
 	public function disableCreateNewRow();
 
+	public function hasCreateNewRowEnabled();
+
+	public function enableRemoveRow();
+
+	public function disableRemoveRow();
+
+	public function hasRemoveRowEnabled();
+
+	/**
+	 * @param string $resource
+	 * @param string $privilege
+	 * @return static
+	 */
+	public function setCreatePermission($resource, $privilege);
+
+	/**
+	 * @param mixed $role
+	 * @param Mesour\Components\Security\IAuthorizator $authorizator
+	 * @return bool
+	 */
+	public function isAllowedCreate($role, Mesour\Components\Security\IAuthorizator $authorizator);
+
+	/**
+	 * @param string $resource
+	 * @param string $privilege
+	 * @return static
+	 */
+	public function setRemovePermission($resource, $privilege);
+
+	/**
+	 * @param $role
+	 * @param Mesour\Components\Security\IAuthorizator $authorizator
+	 * @return bool
+	 */
+	public function isAllowedRemove($role, Mesour\Components\Security\IAuthorizator $authorizator);
+
 	public function setReference($table, $primaryKey, $referencedColumn, $pattern = null);
 
 	public function getReference();

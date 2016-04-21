@@ -21,6 +21,12 @@ abstract class BaseElementField extends BaseField implements IStructureElementFi
 
 	private $createNewRow = false;
 
+	private $removeRow = false;
+
+	private $createPermission;
+
+	private $removePermission;
+
 	public function enableCreateNewRow()
 	{
 		$this->createNewRow = true;
@@ -31,6 +37,70 @@ abstract class BaseElementField extends BaseField implements IStructureElementFi
 	{
 		$this->createNewRow = false;
 		return $this;
+	}
+
+	public function hasCreateNewRowEnabled()
+	{
+		return $this->createNewRow;
+	}
+
+	public function enableRemoveRow()
+	{
+		$this->removeRow = true;
+		return $this;
+	}
+
+	public function disableRemoveRow()
+	{
+		$this->removeRow = false;
+		return $this;
+	}
+
+	public function hasRemoveRowEnabled()
+	{
+		return $this->removeRow;
+	}
+
+	/**
+	 * @param string $resource
+	 * @param string $privilege
+	 * @return $this
+	 */
+	public function setCreatePermission($resource, $privilege)
+	{
+		$this->createPermission = [$resource, $privilege];
+		return $this;
+	}
+
+	/**
+	 * @param mixed $role
+	 * @param Mesour\Components\Security\IAuthorizator $authorizator
+	 * @return bool
+	 */
+	public function isAllowedCreate($role, Mesour\Components\Security\IAuthorizator $authorizator)
+	{
+		return $this->checkIsAllowed($this->createPermission, $role, $authorizator);
+	}
+
+	/**
+	 * @param string $resource
+	 * @param string $privilege
+	 * @return $this
+	 */
+	public function setRemovePermission($resource, $privilege)
+	{
+		$this->removePermission = [$resource, $privilege];
+		return $this;
+	}
+
+	/**
+	 * @param $role
+	 * @param Mesour\Components\Security\IAuthorizator $authorizator
+	 * @return bool
+	 */
+	public function isAllowedRemove($role, Mesour\Components\Security\IAuthorizator $authorizator)
+	{
+		return $this->checkIsAllowed($this->removePermission, $role, $authorizator);
 	}
 
 	public function getReference()
@@ -54,6 +124,7 @@ abstract class BaseElementField extends BaseField implements IStructureElementFi
 	public function toArray()
 	{
 		$this->setParameter('create_new_row', (int) $this->createNewRow, true);
+		$this->setParameter('remove_row', (int) $this->removeRow, true);
 
 		$out = parent::toArray();
 
@@ -68,6 +139,18 @@ abstract class BaseElementField extends BaseField implements IStructureElementFi
 		$out['reference'] = $this->reference;
 
 		return $out;
+	}
+
+	public function getAllowedMethods()
+	{
+		return array_merge(
+			parent::getAllowedMethods(),
+			[
+				Mesour\Editable\Structures\PermissionsChecker::CREATE,
+				Mesour\Editable\Structures\PermissionsChecker::REMOVE,
+				Mesour\Editable\Structures\PermissionsChecker::EDIT_FORM,
+			]
+		);
 	}
 
 	public function getType()

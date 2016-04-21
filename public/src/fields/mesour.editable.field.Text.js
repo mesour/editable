@@ -5,56 +5,87 @@ var mesour = !mesour ? {} : mesour;
 mesour._editable = !mesour._editable ? {} : mesour._editable;
 mesour._editable.fields = !mesour._editable.fields ? {} : mesour._editable.fields;
 
-(function ($) {
+(function($) {
 
-    mesour._editable.fields.Text = function (fieldStructure, editable, element, parameters, identifier, isNumber) {
+	mesour._editable.fields.Text = function(fieldStructure, editable, element, parameters, identifier, isSpecial) {
 
-        this.TYPE = editable.TYPE_TEXT;
+		this.TYPE = editable.TYPE_TEXT;
 
-        parameters = parameters || {};
+		parameters = parameters || {};
 
-        var _this = this,
-            fieldName = fieldStructure['name'],
-            oldValue = $.trim(element.text()),
-            input = $('<input type="text" value="' + oldValue + '" class="form-control">'),
-            reset = function () {
-                element.empty().text(oldValue);
-            };
+		var _this = this,
+			fieldName = fieldStructure['name'],
+			hasTextarea = !isSpecial ? (fieldStructure['hasTextarea'] === 'false' ? false : true) : false,
+			oldValue = $.trim(element.text()),
+			input,
+			hasSoftReset = true,
+			reset = function() {
+			};
 
-        input.on('keydown.mesour-editable', function (e) {
-            if (e.keyCode === 13) {
-                editable.save(fieldName, identifier);
-            } else if (e.keyCode === 27) {
-                reset();
-            }
-        });
+		if (hasTextarea) {
+			input = $('<textarea type="text" class="form-control" name="' + fieldName + '"></textarea>');
+			input.text(oldValue);
+			hasSoftReset = false;
+		} else {
+			input = $('<input type="text" value="' + oldValue + '" class="form-control" name="' + fieldName + '">');
+			input.on('keydown.mesour-editable', function(e) {
+				if (e.keyCode === 13) {
+					editable.save(fieldName, identifier);
+				} else if (e.keyCode === 27) {
+					reset();
+				}
+			});
+		}
 
-        input.css('width', '100%');
+		var popover = new mesour._editable.EditablePopover(editable, element, input, _this, hasSoftReset),
+			reset = function() {
+				popover.destroy();
+			};
 
-        element.empty().append(input);
+		if (hasTextarea) {
+			input.on('keydown', editable.textareaTabFix);
+		}
 
-        input.focus();
+		input.css('width', '100%');
 
-        this.getInput = function () {
-            return input;
-        };
+		popover.onSave(function() {
+			editable.save(fieldName, identifier);
+		});
+		popover.onReset(function() {
+			reset();
+		});
 
-        this.getValue = function () {
-            return {
-                oldValue: oldValue,
-                value: input.val(),
-                params: parameters
-            };
-        };
+		input.focus();
 
-        this.reset = function () {
-            reset();
-        };
+		this.getInput = function() {
+			return input;
+		};
 
-        this.save = function () {
-            element.empty().text(input.val());
-        };
+		this.getEditablePopover = function() {
+			return popover;
+		};
 
-    };
+		this.getElement = function() {
+			return element;
+		};
+
+		this.getValue = function() {
+			return {
+				oldValue: oldValue,
+				value: input.val(),
+				params: parameters
+			};
+		};
+
+		this.reset = function() {
+			reset();
+		};
+
+		this.save = function() {
+			popover.destroy();
+			element.empty().text(input.val());
+		};
+
+	};
 
 })(jQuery);

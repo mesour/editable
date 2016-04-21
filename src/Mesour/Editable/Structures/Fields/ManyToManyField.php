@@ -14,8 +14,12 @@ use Mesour;
 /**
  * @author Matouš Němec (http://mesour.com)
  */
-class ManyToManyField extends BaseElementField
+class ManyToManyField extends BaseElementField implements IManyToManyField
 {
+
+	private $attachRow = false;
+
+	private $attachPermission;
 
 	public function __construct($name)
 	{
@@ -24,12 +28,73 @@ class ManyToManyField extends BaseElementField
 		$this->enableCreateNewRow();
 	}
 
-	public function setReference($table, $primaryKey, $referencedColumn, $pattern = null, $selfColumn = null, $referencedTable = null)
+	public function enableAttachRow()
 	{
+		$this->attachRow = true;
+		return $this;
+	}
+
+	public function disableAttachRow()
+	{
+		$this->attachRow = false;
+		return $this;
+	}
+
+	public function hasAttachRowEnabled()
+	{
+		return $this->attachRow;
+	}
+
+	/**
+	 * @param string $resource
+	 * @param string $privilege
+	 * @return $this
+	 */
+	public function setAttachPermission($resource, $privilege)
+	{
+		$this->attachPermission = [$resource, $privilege];
+		return $this;
+	}
+
+	/**
+	 * @param $role
+	 * @param Mesour\Components\Security\IAuthorizator $authorizator
+	 * @return bool
+	 */
+	public function isAllowedAttach($role, Mesour\Components\Security\IAuthorizator $authorizator)
+	{
+		return $this->checkIsAllowed($this->attachPermission, $role, $authorizator);
+	}
+
+	public function setReference(
+		$table,
+		$primaryKey,
+		$referencedColumn,
+		$pattern = null,
+		$selfColumn = null,
+		$referencedTable = null
+	) {
 		parent::setReference($table, $primaryKey, $referencedColumn, $pattern);
 		$this->reference['self_column'] = $selfColumn;
 		$this->reference['referenced_table'] = $referencedTable;
 		return $this;
+	}
+
+	public function toArray()
+	{
+		$this->setParameter('attach_row', (int) $this->attachRow, true);
+
+		return parent::toArray();
+	}
+
+	public function getAllowedMethods()
+	{
+		return array_merge(
+			parent::getAllowedMethods(),
+			[
+				Mesour\Editable\Structures\PermissionsChecker::ATTACH,
+			]
+		);
 	}
 
 	public function getType()

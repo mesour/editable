@@ -5,63 +5,86 @@ var mesour = !mesour ? {} : mesour;
 mesour._editable = !mesour._editable ? {} : mesour._editable;
 mesour._editable.fields = !mesour._editable.fields ? {} : mesour._editable.fields;
 
-(function ($) {
+(function($) {
 
-    mesour._editable.fields.Enum = function (fieldStructure, editable, element, parameters, identifier, value, values) {
+	mesour._editable.fields.Enum = function(fieldStructure, editable, element, parameters, identifier, value, values, disableEmptyValue) {
 
-        this.TYPE = editable.TYPE_ENUM;
+		this.TYPE = editable.TYPE_ENUM;
 
-        parameters = parameters || {};
+		parameters = parameters || {};
 
-        var _this = this,
-            oldValue = element.text(),
-            fieldName = fieldStructure['name'],
-            values = values ? values : fieldStructure['values'],
-            select = $('<select class="form-control"></select>');
+		var _this = this,
+			oldValue = element.text(),
+			fieldName = fieldStructure['name'],
+			values = values ? values : fieldStructure['values'],
+			isNullable = fieldStructure['nullable'],
+			removeRow = typeof parameters['remove_row'] !== 'undefined' ? (!parameters['remove_row'] ? false : true) : null,
+			select = $('<select class="form-control"></select>'),
+			popover = new mesour._editable.EditablePopover(editable, element, select, _this);
 
-        select.css('width', '100%');
+		select.css('width', '100%');
 
-        for (var i in values) {
-            if (!values.hasOwnProperty(i)) {
-                continue;
-            }
-            var option = $('<option>')
-                .attr('value', values[i]['key'])
-                .text(values[i]['name']);
+		for (var i in values) {
+			if (!values.hasOwnProperty(i)) {
+				continue;
+			}
+			var option = $('<option>')
+				.attr('value', values[i]['key'])
+				.text(values[i]['name']);
 
-            if (values[i]['key'] == value) {
-                option.prop('selected', true);
-            }
+			if (values[i]['key'] == value) {
+				option.prop('selected', true);
+			}
 
-            select.append(option);
-        }
+			select.append(option);
+		}
 
-        element.empty().append(select);
+		if (isNullable && !disableEmptyValue) {
+			select.prepend('<option value="">' + editable.getEditableWidget().getTranslate('emptyValue') + '</option>');
+		}
 
-        select.on('change.mesour-editable', function () {
-            editable.save(fieldName, identifier);
-        });
+		select.on('keydown.mesour-editable', function(e) {
+			if (e.keyCode === 27) {
+				_this.reset();
+			}
+		});
 
-        this.getSelect = function () {
-            return select;
-        };
+		popover.onSave(function() {
+			editable.save(fieldName, identifier);
+		});
+		popover.onReset(function() {
+			_this.reset();
+		});
 
-        this.getValue = function () {
-            return {
-                oldValue: value,
-                value: select.find(':selected').val(),
-                params: parameters
-            };
-        };
+		this.getEditablePopover = function() {
+			return popover;
+		};
 
-        this.reset = function () {
-            element.empty().text(oldValue);
-        };
+		this.getElement = function() {
+			return element;
+		};
 
-        this.save = function () {
-            element.empty().text(select.find(':selected').text());
-        };
+		this.getSelect = function() {
+			return select;
+		};
 
-    };
+		this.getValue = function() {
+			return {
+				oldValue: value,
+				value: select.find(':selected').val(),
+				params: parameters
+			};
+		};
+
+		this.reset = function() {
+			popover.destroy();
+		};
+
+		this.save = function() {
+			popover.destroy();
+			element.empty().text(select.find(':selected').text());
+		};
+
+	};
 
 })(jQuery);

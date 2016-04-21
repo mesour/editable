@@ -5,103 +5,112 @@ var mesour = !mesour ? {} : mesour;
 mesour._editable = !mesour._editable ? {} : mesour._editable;
 mesour._editable.fields = !mesour._editable.fields ? {} : mesour._editable.fields;
 
-(function ($) {
+(function($) {
 
-    mesour._editable.fields.OneToOne = function (fieldStructure, editable, element, parameters, identifier, value) {
+	mesour._editable.fields.OneToOne = function(fieldStructure, editable, element, parameters, identifier, value) {
 
-        this.TYPE = editable.TYPE_ONE_TO_ONE;
+		this.TYPE = editable.TYPE_ONE_TO_ONE;
 
-        parameters = parameters || {};
+		parameters = parameters || {};
 
-        var _this = this,
-            select,
-            oldValue = element.text(),
-            title = fieldStructure['title'],
-            reference = fieldStructure['reference'],
-            table = reference['table'],
-            primaryKey = reference['primary_key'],
-            column = reference['column'],
-            fieldName = fieldStructure['name'],
-            createNewRow = parameters['create_new_row'];
+		var _this = this,
+			select,
+			oldValue = element.text(),
+			title = fieldStructure['title'],
+			reference = fieldStructure['reference'],
+			table = reference['table'],
+			primaryKey = reference['primary_key'],
+			column = reference['column'],
+			fieldName = fieldStructure['name'],
+			createNewRow = parameters['create_new_row'];
 
-        editable.getEditableWidget().getReferenceData(editable.getName(), table, function (data) {
-            data = data.data ? data.data : data;
+		function getDefaultValues(oldValues, values) {
+			values = !values ? {} : values;
+			oldValues = !oldValues ? {} : oldValues;
+			var references = null;
+			if (values['id']) {
+				references = {
+					id: values['id']
+				};
+			}
+			return {
+				oldValues: oldValues,
+				newValues: values,
+				params: parameters,
+				values: references
+			};
+		};
 
-            var values = {};
+		editable.getEditableWidget().getReferenceData(editable.getName(), table, function (data) {
+			data = data.data ? data.data : data;
 
-            if (createNewRow) {
-                values[0] = {
-                    key: '__add_new_record__',
-                    name: '+ Add new record'
-                };
-            }
+			var values = {},
+				hiddenValues = {};
 
-            var found = null;
-            for (var i in data) {
-                if (!data.hasOwnProperty(i)) {
-                    continue;
-                }
-                if (data[i][primaryKey] == value) {
-                    found = data[i];
-                }
+			for (var i in data) {
+				if (!data.hasOwnProperty(i)) {
+					continue;
+				}
 
-                values[data[i][primaryKey]] = {
-                    key: data[i][primaryKey],
-                    name: data[i][column]
-                };
-            }
+				if (data[i][primaryKey] == value) {
+					values = data[i];
+					hiddenValues[column] = data[i][column];
+					break;
+				}
+			}
 
-            select = new mesour._editable.fields.Enum(fieldStructure, editable, element, parameters, identifier, value, values);
+			editable.getModal().show();
+			editable.getModal().setTitle(title);
 
-            select.getSelect().off('change.mesour-editable');
-            select.getSelect().on('change.mesour-editable', function () {
-                var $this = $(this);
+			var elementFields = editable.getElementStructure(table);
+			var form = editable.getModal().createForm(elementFields.fields ? elementFields.fields : elementFields);
+			editable.getModal().fillForm(form, values, hiddenValues);
+			editable.getModal().addHiddenField(form, '__fieldName', fieldName);
 
-                if ($this.val() === '__add_new_record__') {
-                    editable.getModal().show();
-                    editable.getModal().setTitle(title);
+			if (identifier) {
+				editable.getModal().addHiddenField(form, '__identifier', identifier);
 
-                    var elementFields = editable.getElementStructure(table)
-                    var form = editable.getModal().createForm(elementFields.fields ? elementFields.fields : elementFields);
-                    editable.getModal().addHiddenField(form, '__fieldName', fieldName);
-                    editable.getModal().addHiddenField(form, '__identifier', identifier);
-                    editable.getModal().onSubmit(identifier, function (e, currentIdentifier) {
-                        _this.getValue = function () {
-                            var out = select.getValue();
-                            out['newValues'] = editable.getModal().getFormValues(form);
-                            if (!found) {
-                                out['oldValues'] = {};
-                                out['oldValues'][primaryKey] = value;
-                            } else {
-                                out['oldValues'] = found;
-                            }
-                            return out;
-                        };
+				if(value) {
+					var identifierField = editable.getModal().addHiddenField(form, primaryKey, value);
+					identifierField.attr('data-editable-in-data', 'true');
+				}
+			}
 
-                        editable.create(fieldName, currentIdentifier, form, table);
+			editable.getModal().onSubmit(identifier, function (e, currentIdentifier) {
+				_this.getValue = function () {
+					return getDefaultValues(values, editable.getModal().getFormValues(form));
+				};
 
-                        _this.getValue = function () {
-                            return select.getValue();
-                        };
-                    })
-                } else {
-                    editable.save(fieldName, identifier);
-                }
-            });
-        });
+				if (value) {
+					editable.editForm(fieldName, currentIdentifier, form, table);
+				} else {
+					editable.create(fieldName, identifier, form, table);
+				}
 
-        this.getValue = function () {
-            return select.getValue();
-        };
+				_this.getValue = function () {
+					return getDefaultValues(values);
+				};
 
-        this.reset = function () {
-            select.reset();
-        };
 
-        this.save = function () {
-            select.save();
-        };
+			})
+		});
 
-    };
+		this.getElement = function() {
+			return element;
+		};
+
+		this.getValue = function () {
+			return getDefaultValues();
+		};
+
+		this.reset = function () {
+
+		};
+
+		this.save = function () {
+
+		};
+
+	};
 
 })(jQuery);

@@ -21,11 +21,19 @@ mesour.editable = !mesour.editable ? {} : mesour.editable;
             allSelected: 'All existing companies are attachet to this client...',
             attachExisting: 'Attach existing',
             createNew: 'Create new',
+            reset: 'Reset value',
+            emptyButton: 'Set empty value',
+            saveItem: 'Save',
+            editItem: 'Edit in form',
+            cancelEdit: 'Cancel',
             dataSaved: 'Successfuly saved',
-            invalidNumber: 'Value must be valid number'
+            saveEmptyValue: 'Really save empty value?',
+            emptyValue: '- none',
+            invalidNumber: 'Value must be valid number',
+            statusError: 'ERROR! Status: %status%. Try save data later.'
         };
 
-        this.enable = function (name) {
+        this.enable = function (name, isInline, isDisabledInlineAlerts) {
             if (_this.items[name]) {
                 throw new Error('Editable component with name ' + name + ' already exits');
             }
@@ -34,6 +42,8 @@ mesour.editable = !mesour.editable ? {} : mesour.editable;
                     var data = $.parseJSON(r.responseText).data;
 
                     _this.items[name] = new mesour._editable.Editable(name, data, _this);
+                    _this.items[name].setInline(isInline);
+                    _this.items[name].setDisabledInlineAlerts(isDisabledInlineAlerts);
                 } catch (e) {
                     throw e;
                 }
@@ -68,11 +78,12 @@ mesour.editable = !mesour.editable ? {} : mesour.editable;
                 }
                 var created = mesour.core.createLink(name, 'referenceData', postData, true);
                 $.post(created[0], created[1]).complete(function (r) {
-                    try {
-                        var data = $.parseJSON(r.responseText);
-                        references[name][table] = data;
+                    var data = $.parseJSON(r.responseText);
+                    references[name][table] = data;
 
-                        callback(data);
+                    callback(data);
+                    try {
+
                     } catch (e) {
                         mesour.core.redrawCallback(r);
                     }

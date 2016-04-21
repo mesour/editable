@@ -15,14 +15,16 @@ CREATE TABLE `companies` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO `companies` (`id`, `name`, `reg_num`, `verified`) VALUES
-(1,	'Google',	'789123',	1),
-(2,	'Google a.s.',	'789123',	1),
+(1,	'Google CZ',	'789123',	1),
+(2,	'Google',	'789123',	1),
 (3,	'Allianz',	'456789',	0),
 (4,	'Ford',	'987654',	0),
 (5,	'Foxconn',	'654321',	0),
 (6,	'Verizon',	'357654',	1),
 (7,	'Lukoil',	'236846',	1),
-(8,	'Honda',	'982154',	0);
+(8,	'Honda',	'982154',	0),
+(18,	'Test company',	'123456',	1),
+(19,	'test',	'',	0);
 
 DROP TABLE IF EXISTS `empty`;
 CREATE TABLE `empty` (
@@ -47,13 +49,14 @@ INSERT INTO `groups` (`id`, `name`, `type`, `date`, `members`) VALUES
 (1,	'Group 1',	'first',	'2016-01-01 00:00:00',	7),
 (2,	'Group 2',	'second',	'2016-03-05 00:00:00',	6),
 (3,	'Group 3',	'second',	'2016-05-09 00:00:00',	7),
-(4,	'test',	'first',	'0000-00-00 00:00:00',	654654);
+(4,	'test',	'first',	'0000-00-00 00:00:00',	654654),
+(5,	'New group',	'second',	'2016-03-16 00:00:00',	123);
 
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `action` int(10) unsigned DEFAULT NULL,
-  `group_id` int(10) unsigned NOT NULL,
+  `group_id` int(10) unsigned DEFAULT NULL,
   `role` enum('admin','moderator') NOT NULL,
   `name` varchar(64) DEFAULT NULL,
   `surname` varchar(64) NOT NULL,
@@ -67,11 +70,11 @@ CREATE TABLE `users` (
   PRIMARY KEY (`id`),
   KEY `action` (`action`),
   KEY `group_id` (`group_id`),
-  CONSTRAINT `users_ibfk_1` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`) ON UPDATE CASCADE
+  CONSTRAINT `users_ibfk_2` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO `users` (`id`, `action`, `group_id`, `role`, `name`, `surname`, `email`, `last_login`, `amount`, `avatar`, `order`, `timestamp`, `has_pro`) VALUES
-(1,	1,	2,	'admin',	'John',	'Doe',	'john.doe@test.xx',	'2015-05-14 00:00:00',	150,	'/avatar/01.png',	100,	1418255325,	1),
+(1,	1,	5,	'moderator',	'Peter',	'Larson',	'fasdfasdf@asdf.cz',	'2015-05-12 08:14:08',	150.6566,	'/avatar/01.png',	100,	1418255325,	1),
 (2,	1,	2,	'moderator',	'Peter',	'Larson',	'peter.larson@test.xx',	'2014-09-09 13:37:32',	15220.654,	'/avatar/02.png',	160,	1418255330,	0),
 (3,	1,	2,	'admin',	'Claude',	'Graves',	'claude.graves@test.xx',	'2014-09-02 14:17:32',	9876.465498,	'/avatar/03.png',	180,	1418255311,	0),
 (4,	0,	3,	'moderator',	'Stuart',	'Norman',	'stuart.norman@test.xx',	'2014-09-09 18:39:18',	98766.2131,	'/avatar/04.png',	120,	1418255328,	0),
@@ -106,7 +109,8 @@ CREATE TABLE `user_addresses` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO `user_addresses` (`id`, `user_id`, `street`, `city`, `zip`, `country`) VALUES
-(10,	1,	'Test 22',	'Hehehov',	'12345',	'CZ');
+(10,	1,	'Test 13',	'Prague',	'12000',	'CZ'),
+(11,	1,	'',	'',	'',	'sk');
 
 DROP TABLE IF EXISTS `user_companies`;
 CREATE TABLE `user_companies` (
@@ -120,9 +124,9 @@ CREATE TABLE `user_companies` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO `user_companies` (`user_id`, `company_id`) VALUES
-(1,	2),
 (1,	3),
 (1,	5),
+(1,	8),
 (2,	5),
 (4,	5),
 (5,	5),
@@ -140,5 +144,3 @@ INSERT INTO `user_companies` (`user_id`, `company_id`) VALUES
 (19,	2),
 (19,	6),
 (20,	2);
-
--- 2016-03-26 17:20:38

@@ -17,6 +17,8 @@ use Mesour;
 class EnumField extends BaseField
 {
 
+	use Mesour\Sources\Structures\Nullable;
+
 	private $values = [];
 
 	public function addValue($key, $name = null)
@@ -28,6 +30,11 @@ class EnumField extends BaseField
 		return $this;
 	}
 
+	public function getValues()
+	{
+		return $this->values;
+	}
+
 	public function toArray()
 	{
 		$out = parent::toArray();
@@ -35,6 +42,7 @@ class EnumField extends BaseField
 		//todo: translate value names
 
 		$out['values'] = $this->values;
+		$out['nullable'] = $this->isNullable();
 
 		return $out;
 	}

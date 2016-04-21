@@ -17,6 +17,17 @@ use Mesour;
 class OneToOneField extends BaseElementField
 {
 
+	use Mesour\Sources\Structures\Nullable;
+
+	public function toArray()
+	{
+		$out = parent::toArray();
+
+		$out['nullable'] = $this->isNullable();
+
+		return $out;
+	}
+
 	public function getType()
 	{
 		return Mesour\Sources\Structures\Columns\IColumnStructure::ONE_TO_ONE;
