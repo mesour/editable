@@ -227,10 +227,8 @@ mesour._editable = !mesour._editable ? {} : mesour._editable;
 				if (response.status === 200) {
 					if (field) {
 						field.saveValue();
+						removeEditedField(fieldName, identifier);
 					}
-					var $selector = field.getField().selector;
-
-					removeEditedField(fieldName, identifier);
 					mesour.core.redrawCallback(response);
 
 					if (!isNormal) {

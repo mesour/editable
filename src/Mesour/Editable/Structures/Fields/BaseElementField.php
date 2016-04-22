@@ -123,8 +123,8 @@ abstract class BaseElementField extends BaseField implements IStructureElementFi
 
 	public function toArray()
 	{
-		$this->setParameter('create_new_row', (int) $this->createNewRow, true);
-		$this->setParameter('remove_row', (int) $this->removeRow, true);
+		$this->setParameter('create_new_row', $this->createNewRow, true);
+		$this->setParameter('remove_row', $this->removeRow, true);
 
 		$out = parent::toArray();
 

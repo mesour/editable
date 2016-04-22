@@ -21,13 +21,6 @@ class ManyToManyField extends BaseElementField implements IManyToManyField
 
 	private $attachPermission;
 
-	public function __construct($name)
-	{
-		parent::__construct($name);
-
-		$this->enableCreateNewRow();
-	}
-
 	public function enableAttachRow()
 	{
 		$this->attachRow = true;
@@ -82,7 +75,7 @@ class ManyToManyField extends BaseElementField implements IManyToManyField
 
 	public function toArray()
 	{
-		$this->setParameter('attach_row', (int) $this->attachRow, true);
+		$this->setParameter('attach_row', $this->attachRow, true);
 
 		return parent::toArray();
 	}

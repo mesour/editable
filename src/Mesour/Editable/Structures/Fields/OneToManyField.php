@@ -17,13 +17,6 @@ use Mesour;
 class OneToManyField extends BaseElementField
 {
 
-	public function __construct($name)
-	{
-		parent::__construct($name);
-
-		$this->enableCreateNewRow();
-	}
-
 	public function getType()
 	{
 		return Mesour\Sources\Structures\Columns\IColumnStructure::ONE_TO_MANY;

@@ -15,7 +15,8 @@
 | You have not permission for this action.              | User without permission message                              |
 | ERROR! Status: %status%. Try save data later.         | Error message if response status is not 200                  |
 | - none                                                | Text in enum select if is nullable for select empty value    |
-| Really set empty value?                               | Text in confirm for empty value button                       |
+| Really save empty value?                               | Text in confirm for empty value button                       |
+| Set empty value                                       | Text in title of button for set empty value                  |
 | Save                                                  | Title for save button to popover                             |
 | Cancel                                                | Title for cancel button to popover                           |
 | Edit in form                                          | Title for edit button to ManyToOne field popover             |

@@ -3,7 +3,7 @@
       integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 
 <link rel="stylesheet" href="../vendor/mesour/components/public/DateTimePicker/bootstrap-datetimepicker.min.css">
-<link rel="stylesheet" href="../public/mesour.editable.css">
+<link rel="stylesheet" href="../public/src/mesour.editable.css">
 
 <style>
 
@@ -151,6 +151,8 @@ function createForUser(\Mesour\Editable\Structures\IDataStructure $structure, $u
 		->setEditPermission('user-editable', 'has_pro-edit');
 
 	$structure->addOneToOne('wallet', 'Wallet', $userId)
+		->enableRemoveRow()
+		->enableCreateNewRow()
 		->setEditPermission('user-editable', 'wallet-edit');
 
 	$structure->addManyToOne('group', 'Group', $userId)
@@ -169,7 +171,7 @@ function createForUser(\Mesour\Editable\Structures\IDataStructure $structure, $u
 
 	$structure->addManyToMany('companies', 'Companies', $userId)
 		->enableCreateNewRow()
-		->enableCreateNewRow()
+		->enableRemoveRow()
 		->enableAttachRow()
 		->setEditPermission('user-editable', 'companies-edit')
 		->setRemovePermission('user-editable', 'companies-remove')

@@ -8,4 +8,5 @@
 /examples/log
 /examples/tmp
 /tests/Mesour/EditableTests/output
+/tests/Mesour/EditableTests/Handlers/output
 /examples/environment.php

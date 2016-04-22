@@ -58,7 +58,6 @@ mesour._editable.fields = !mesour._editable.fields ? {} : mesour._editable.field
 			select = new mesour._editable.fields.Enum(fieldStructure, editable, element, parameters, identifier, value, values);
 			popover = select.getEditablePopover();
 
-			console.log(editCurrentRow);
 			if (editCurrentRow) {
 				popover.addButton(editButton);
 			}
@@ -69,7 +68,7 @@ mesour._editable.fields = !mesour._editable.fields ? {} : mesour._editable.field
 				editable.getModal().show();
 				editable.getModal().setTitle(title);
 
-				var elementFields = editable.getElementStructure(table)
+				var elementFields = editable.getElementStructure(table);
 				var form = editable.getModal().createForm(elementFields.fields ? elementFields.fields : elementFields);
 
 				if (formValues) {

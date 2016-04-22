@@ -23,7 +23,7 @@ class ManyToOneField extends BaseElementField
 
 	public function toArray()
 	{
-		$this->setParameter('edit_current_row', (int) $this->editCurrentRow, true);
+		$this->setParameter('edit_current_row', $this->editCurrentRow, true);
 
 		$out = parent::toArray();
 
