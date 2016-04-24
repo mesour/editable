@@ -250,8 +250,16 @@ mesour._editable = !mesour._editable ? {} : mesour._editable;
 		this.getModalBody = function() {
 			return mesour.modal.getBody(modalName);
 		};
+		
+		this.getElement = function() {
+			return element;
+		};
 
 		this.disable = function() {
+			$('.modal-backdrop.fade.in').fadeOut(function(){
+				$(this).remove();
+				$('body').removeClass('modal-open');
+			});
 			element.find('[data-editable-form-save]').hide();
 		};
 

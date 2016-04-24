@@ -35,7 +35,8 @@ mesour.editable = !mesour.editable ? {} : mesour.editable;
 
         this.enable = function (name, isInline, isDisabledInlineAlerts) {
             if (_this.items[name]) {
-                throw new Error('Editable component with name ' + name + ' already exits');
+                _this.items[name].refresh();
+                return;
             }
             $.get(mesour.core.createLink(name, 'dataStructure')).complete(function (r) {
                 try {

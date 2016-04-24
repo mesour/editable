@@ -13,7 +13,11 @@ mesour._editable = !mesour._editable ? {} : mesour._editable;
 			field;
 
 		if (identifier) {
-			parameters = parameters[identifier];
+			if(typeof parameters[identifier] !== 'undefined') {
+				parameters = parameters[identifier];
+			} else {
+				parameters = parameters[0];
+			}
 		}
 
 		if (type === editable.TYPE_TEXT) {

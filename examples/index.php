@@ -157,6 +157,7 @@ function createForUser(\Mesour\Editable\Structures\IDataStructure $structure, $u
 
 	$structure->addManyToOne('group', 'Group', $userId)
 		->enableEditCurrentRow()
+		->enableEditCurrentRow()
 		->enableCreateNewRow()
 		->setEditPermission('user-editable', 'group-edit')
 		->setRemovePermission('user-editable', 'group-remove')
@@ -373,8 +374,6 @@ $editable->onEditField[] = function (
 		->update($data);
 };
 
-echo $editable->render();
-
 $currentUser = $source->fetch();
 $currentUserId = $currentUser['id'];
 
@@ -383,6 +382,8 @@ $currentUserId = $currentUser['id'];
 <hr style="margin-bottom: 50px;">
 
 <div class="container"<?php echo $editable->createSnippet()->attributes(); ?>>
+
+	<?php echo $editable->render(); ?>
 
 	<div class="panel panel-info">
 		<div class="panel-heading">
@@ -562,7 +563,7 @@ $currentUserId = $currentUser['id'];
 
 <script src="../vendor/mesour/components/public/mesour.components.min.js"></script>
 
-<script src="../vendor/mesour/modal/public/mesour.modal.min.js"></script>
+<script src="../vendor/mesour/modal/public/mesour.modal.js"></script>
 
 <script src="../public/popover/mesour.popover.js"></script>
 

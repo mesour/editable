@@ -257,6 +257,12 @@ mesour._editable = !mesour._editable ? {} : mesour._editable;
 			}
 		};
 
+		this.refresh = function() {
+			modal = new mesour._editable.EditableModal(name, _this);
+			mesour.modal.delete(modal.getName());
+			mesour.modal.create(modal.getElement());
+		};
+
 		this.remove = function(fieldName, element, identifier, value) {
 			var created = mesour.core.createLink(name, 'remove', postData = {
 				name: fieldName,
