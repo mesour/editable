@@ -140,7 +140,7 @@ class DataElementStructure implements IDataElementStructure
 		$this->inInitializing = $in;
 	}
 
-	protected function hasField($name)
+	public function hasField($name)
 	{
 		return isset($this->fields[$name]);
 	}
