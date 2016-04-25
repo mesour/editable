@@ -54,7 +54,7 @@ mesour._editable.fields = !mesour._editable.fields ? {} : mesour._editable.field
 
 				if (data[i][primaryKey] == value) {
 					values = data[i];
-					hiddenValues[column] = data[i][column];
+					hiddenValues[column] = data[i][primaryKey];
 					break;
 				}
 			}

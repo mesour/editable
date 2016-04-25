@@ -341,7 +341,7 @@ $editable->onEditElement[] = function (
 			->where('id = ?', $reference->getToValue())
 			->update($values);
 	} elseif ($field->getName() === 'wallet') {
-		unset($values['id']);
+		unset($values['id'], $values['wallet_id']);
 		$context->table('wallets')
 			->where('id = ?', $reference->getToValue())
 			->update($values);
@@ -374,6 +374,8 @@ $editable->onEditField[] = function (
 		->update($data);
 };
 
+$created = $editable->create();
+
 $currentUser = $source->fetch();
 $currentUserId = $currentUser['id'];
 
@@ -383,7 +385,7 @@ $currentUserId = $currentUser['id'];
 
 <div class="container"<?php echo $editable->createSnippet()->attributes(); ?>>
 
-	<?php echo $editable->render(); ?>
+	<?php echo $created; ?>
 
 	<div class="panel panel-info">
 		<div class="panel-heading">

@@ -225,8 +225,12 @@ class Editable extends Mesour\Components\Control\AttributesControl
 			$fieldReference = $currentField->getReference();
 
 			foreach ($this->getDataStructure()->getElement($fieldReference['table'])->getFields() as $field) {
-				$values[$field->getName()] = $this->fixValue($field, $values[$field->getName()]);
-				$oldValues[$field->getName()] = $this->fixValue($field, $oldValues[$field->getName()]);
+				if (isset($values[$field->getName()])) {
+					$values[$field->getName()] = $this->fixValue($field, $values[$field->getName()]);
+				}
+				if (isset($oldValues[$field->getName()])) {
+					$oldValues[$field->getName()] = $this->fixValue($field, $oldValues[$field->getName()]);
+				}
 			}
 
 			$this->fixReferenceColumn($values, $fieldReference, 'primary_key');
