@@ -13,7 +13,7 @@
     "mesour/components": "~3.0.0",
     "mesour/button": "~3.0.0",
     "mesour/modal": "~3.0.0",
-    "mesour/sources": "dev-master"
+    "mesour/sources": "~3.0.0"
   },
   "require-dev": {
     "tracy/tracy": "~2.3.0",
@@ -24,8 +24,6 @@
     "consistence/coding-standard": "^0.10",
     "nette/tester": "^1.7"
   },
-  "minimum-stability": "beta",
-  "prefer-stable": true,
   "autoload": {
     "classmap": ["src/"]
   }
