@@ -14,7 +14,7 @@ use Mesour;
 /**
  * @author Matouš Němec (http://mesour.com)
  */
-class TextField extends BaseField
+class TextField extends ValidatedField
 {
 
 	use Mesour\Sources\Structures\Nullable;

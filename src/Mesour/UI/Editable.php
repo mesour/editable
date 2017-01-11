@@ -27,6 +27,11 @@ use Nette\Utils\Strings;
 class Editable extends Mesour\Components\Control\AttributesControl
 {
 
+	use Mesour\Components\Localization\Translatable;
+	use Mesour\Components\Security\Authorised {
+		getUserRole as public;
+	}
+
 	const WRAPPER = 'wrapper';
 
 	private $disabled = false;
@@ -195,6 +200,10 @@ class Editable extends Mesour\Components\Control\AttributesControl
 		try {
 			$currentField = $this->getDataStructure()->getField($name);
 
+			if ($currentField instanceof Mesour\Editable\Structures\Fields\IValidatedField) {
+				$currentField->validate($newValue);
+			}
+
 			PermissionsChecker::check(PermissionsChecker::EDIT, $this, $currentField);
 
 			$this->onEditField(
@@ -226,7 +235,11 @@ class Editable extends Mesour\Components\Control\AttributesControl
 
 			foreach ($this->getDataStructure()->getElement($fieldReference['table'])->getFields() as $field) {
 				if (isset($values[$field->getName()])) {
-					$values[$field->getName()] = $this->fixValue($field, $values[$field->getName()]);
+					$newValue = $this->fixValue($field, $values[$field->getName()]);
+					if ($field instanceof Mesour\Editable\Structures\Fields\IValidatedField) {
+						$field->validate($newValue);
+					}
+					$values[$field->getName()] = $newValue;
 				}
 				if (isset($oldValues[$field->getName()])) {
 					$oldValues[$field->getName()] = $this->fixValue($field, $oldValues[$field->getName()]);
@@ -274,6 +287,8 @@ class Editable extends Mesour\Components\Control\AttributesControl
 		try {
 			$currentField = $this->getDataStructure()->getField($name);
 
+
+
 			PermissionsChecker::check(PermissionsChecker::CREATE, $this, $currentField);
 
 			$reference = $currentField->getReference();
@@ -281,7 +296,11 @@ class Editable extends Mesour\Components\Control\AttributesControl
 			$newValues = [];
 			foreach ($this->getDataStructure()->getElement($reference['table'])->getFields() as $field) {
 				if (isset($values[$field->getName()])) {
-					$newValues[$field->getName()] = $this->fixValue($field, $values[$field->getName()]);
+					$value = $this->fixValue($field, $values[$field->getName()]);
+					if ($field instanceof Mesour\Editable\Structures\Fields\IValidatedField) {
+						$field->validate($value);
+					}
+					$newValues[$field->getName()] = $value;
 				}
 			}
 
