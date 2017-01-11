@@ -73,13 +73,13 @@ abstract class BaseElementField extends BaseField implements IStructureElementFi
 	}
 
 	/**
-	 * @param mixed|array $roles
+	 * @param mixed $role
 	 * @param Mesour\Components\Security\IAuthorizator $authorizator
 	 * @return bool
 	 */
-	public function isAllowedCreate($roles, Mesour\Components\Security\IAuthorizator $authorizator)
+	public function isAllowedCreate($role, Mesour\Components\Security\IAuthorizator $authorizator)
 	{
-		return $this->checkIsAllowed($this->createPermission, $roles, $authorizator);
+		return $this->checkIsAllowed($this->createPermission, $role, $authorizator);
 	}
 
 	/**
@@ -94,13 +94,13 @@ abstract class BaseElementField extends BaseField implements IStructureElementFi
 	}
 
 	/**
-	 * @param string|array $roles
+	 * @param string $role
 	 * @param Mesour\Components\Security\IAuthorizator $authorizator
 	 * @return bool
 	 */
-	public function isAllowedRemove($roles, Mesour\Components\Security\IAuthorizator $authorizator)
+	public function isAllowedRemove($role, Mesour\Components\Security\IAuthorizator $authorizator)
 	{
-		return $this->checkIsAllowed($this->removePermission, $roles, $authorizator);
+		return $this->checkIsAllowed($this->removePermission, $role, $authorizator);
 	}
 
 	public function getReference()

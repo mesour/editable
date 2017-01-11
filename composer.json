@@ -10,22 +10,20 @@
     }],
   "require": {
     "php": ">=5.5.0",
-    "mesour/components": "dev-experimental",
-    "mesour/button": "dev-experimental",
-    "mesour/modal": "dev-experimental",
+    "mesour/components": "~3.0.0",
+    "mesour/button": "~3.0.0",
+    "mesour/modal": "~3.0.0",
     "mesour/sources": "~3.0.0"
   },
   "require-dev": {
     "tracy/tracy": "~2.3.0",
-    "nette/database": "^2.4",
-    "nette/robot-loader": "^2.4",
+    "nette/database": "^2.3",
+    "nette/robot-loader": "^2.3",
     "doctrine/orm": "^2.5",
     "slevomat/coding-standard": "^1.0",
     "consistence/coding-standard": "^0.10",
     "nette/tester": "^1.7"
   },
-  "minimum-stability": "dev",
-  "prefer-stable": true,
   "autoload": {
     "classmap": ["src/"]
   }

@@ -64,26 +64,26 @@ abstract class BaseField implements IStructureField
 	}
 
 	/**
-	 * @param string|array $roles
+	 * @param string $role
 	 * @param Mesour\Components\Security\IAuthorizator $authorizator
 	 * @return bool
 	 */
-	public function isAllowedEdit($roles, Mesour\Components\Security\IAuthorizator $authorizator)
+	public function isAllowedEdit($role, Mesour\Components\Security\IAuthorizator $authorizator)
 	{
-		return $this->checkIsAllowed($this->editPermission, $roles, $authorizator);
+		return $this->checkIsAllowed($this->editPermission, $role, $authorizator);
 	}
 
 	/**
 	 * @param array|null $permission
-	 * @param string|array $roles
+	 * @param mixed $role
 	 * @param Mesour\Components\Security\IAuthorizator $authorizator
 	 * @return bool
 	 */
-	protected function checkIsAllowed($permission, $roles, Mesour\Components\Security\IAuthorizator $authorizator)
+	protected function checkIsAllowed($permission, $role, Mesour\Components\Security\IAuthorizator $authorizator)
 	{
 		return !$permission || Mesour\Components\Utils\Helpers::invokeArgs(
 			[$authorizator, 'isAllowed'],
-			array_merge($roles, $permission)
+			array_merge([$role], $permission)
 		);
 	}
 
@@ -134,17 +134,12 @@ abstract class BaseField implements IStructureField
 
 	public function toArray()
 	{
-		$out = [
+		return [
 			'name' => $this->getName(),
 			'title' => !$this->title ? $this->getName() : $this->title,
 			'type' => $this->getType(),
 			'params' => $this->parameters,
 		];
-
-		if ($this instanceof IValidatedField) {
-			$out['rules'] = $this->getRules();
-		}
-		return $out;
 	}
 
 	public function getAllowedMethods()

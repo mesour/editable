@@ -14,7 +14,7 @@ use Mesour;
 /**
  * @author Matouš Němec (http://mesour.com)
  */
-class NumberField extends ValidatedField implements IValidatedField
+class NumberField extends BaseField
 {
 
 	use Mesour\Sources\Structures\Nullable;
@@ -26,12 +26,6 @@ class NumberField extends ValidatedField implements IValidatedField
 	private $decimalPoint = '.';
 
 	private $decimals = 0;
-
-	public function __construct($name)
-	{
-		parent::__construct($name);
-		$this->addRule(Mesour\Editable\Rules\RuleType::NUMERIC);
-	}
 
 	public function setUnit($unit)
 	{

@@ -50,13 +50,13 @@ class ManyToManyField extends BaseElementField implements IManyToManyField
 	}
 
 	/**
-	 * @param string|array $roles
+	 * @param string $role
 	 * @param Mesour\Components\Security\IAuthorizator $authorizator
 	 * @return bool
 	 */
-	public function isAllowedAttach($roles, Mesour\Components\Security\IAuthorizator $authorizator)
+	public function isAllowedAttach($role, Mesour\Components\Security\IAuthorizator $authorizator)
 	{
-		return $this->checkIsAllowed($this->attachPermission, $roles, $authorizator);
+		return $this->checkIsAllowed($this->attachPermission, $role, $authorizator);
 	}
 
 	public function setReference(

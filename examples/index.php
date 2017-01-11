@@ -3,8 +3,7 @@
       integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 
 <link rel="stylesheet" href="../vendor/mesour/components/public/DateTimePicker/bootstrap-datetimepicker.min.css">
-
-<link rel="stylesheet" href="../node_modules/mesour-editable/dist/css/mesour.editable.min.css">
+<link rel="stylesheet" href="../public/src/mesour.editable.css">
 
 <style>
 
@@ -25,8 +24,6 @@ if (file_exists(__DIR__ . '/environment.php')) {
 
 \Tracy\Debugger::enable(\Tracy\Debugger::DEVELOPMENT, __DIR__ . '/log');
 \Tracy\Debugger::$strictMode = true;
-
-use \Mesour\Editable\Rules\RuleType;
 
 $loader = new Nette\Loaders\RobotLoader;
 $loader->addDirectory(SRC_DIR);
@@ -82,13 +79,9 @@ $walletColumn->setPattern('{amount}');
 
 $structure = \Mesour\Editable\Structures\DataStructure::fromSource($source);
 
-$structure->addText('name', 'Name')
-	->addRule(RuleType::EMAIL, 'Test email message.');
-
 $groupsElement = $structure->getElement('groups');
 
-$groupsElement->addText('name', 'Name')
-	->addRule(RuleType::PATTERN, 'Test email message.', '[0-9a-z]{6}');
+$groupsElement->addText('name', 'Name');
 
 $groupsElement->addText('type', 'Type');
 
@@ -96,7 +89,6 @@ $groupsElement->addDate('date', 'Date')
 	->setFormat('Y-m-d H:i:s');
 
 $groupsElement->addNumber('members', 'Members')
-	->addRule(RuleType::RANGE, 'Rule type range error', [0, 50])
 	->setUnit('EUR')
 	->setDecimals(2)
 	->setDecimalPoint(',')
@@ -130,7 +122,6 @@ function createForUser(\Mesour\Editable\Structures\IDataStructure $structure, $u
 {
 	$structure->addText('name', 'Name', $userId)
 		->setTextarea()
-		->addRule(\Mesour\Editable\Rules\RuleType::FILLED, 'Test error message.')
 		->setEditPermission('user-editable', 'name-edit');
 
 	$structure->addText('surname', 'Surname', $userId)
@@ -572,7 +563,27 @@ $currentUserId = $currentUser['id'];
 <script src="../vendor/mesour/components/public/DateTimePicker/moment.min.js"></script>
 <script src="../vendor/mesour/components/public/DateTimePicker/bootstrap-datetimepicker.min.js"></script>
 
-<script src="../node_modules/mesour-editable/dist/js/mesour.editable.min.js"></script>
+<script src="../vendor/mesour/components/public/mesour.components.min.js"></script>
+
+<script src="../vendor/mesour/modal/public/mesour.modal.js"></script>
+
+<script src="../public/popover/mesour.popover.js"></script>
+
+<script src="../public/src/mesour.editable.EditablePopover.js"></script>
+<script src="../public/src/fields/mesour.editable.field.Text.js"></script>
+<script src="../public/src/fields/mesour.editable.field.Enum.js"></script>
+<script src="../public/src/fields/mesour.editable.field.Number.js"></script>
+<script src="../public/src/fields/mesour.editable.field.Date.js"></script>
+<script src="../public/src/fields/mesour.editable.field.Bool.js"></script>
+<script src="../public/src/fields/mesour.editable.field.OneToOne.js"></script>
+<script src="../public/src/fields/mesour.editable.field.ManyToOne.js"></script>
+<script src="../public/src/fields/mesour.editable.field.OneToMany.js"></script>
+<script src="../public/src/fields/mesour.editable.field.ManyToMany.js"></script>
+<script src="../public/src/mesour.editable.Validators.js"></script>
+<script src="../public/src/mesour.editable.FieldEditor.js"></script>
+<script src="../public/src/mesour.editable.Editable.js"></script>
+<script src="../public/src/mesour.editable.EditableModal.js"></script>
+<script src="../public/src/mesour.editable.core.js"></script>
 
 <script>
 	$(function() {
