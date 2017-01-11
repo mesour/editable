@@ -287,6 +287,8 @@ class Editable extends Mesour\Components\Control\AttributesControl
 		try {
 			$currentField = $this->getDataStructure()->getField($name);
 
+
+
 			PermissionsChecker::check(PermissionsChecker::CREATE, $this, $currentField);
 
 			$reference = $currentField->getReference();
