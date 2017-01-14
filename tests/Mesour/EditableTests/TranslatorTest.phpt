@@ -2,6 +2,7 @@
 
 namespace Mesour\EditableTests;
 
+use Mesour\Components\Localization\ITranslator;
 use Tester\Assert;
 
 require_once __DIR__ . '/../../bootstrap.php';
@@ -17,7 +18,7 @@ class TranslatorTest extends BaseTestCase
 
 		$application = $this->createApplication();
 
-		$application->setTranslator(new TestTranslator($this->getTranslates()));
+		$application->getContext()->setService(new TestTranslator($this->getTranslates()), ITranslator::class);
 
 		$application->addComponent($editable);
 
