@@ -1,6 +1,7 @@
 .idea
 /vendor
 /composer.lock
+/node_modules
 /tmp
 /tests/log
 /tests/environment.php

@@ -19,13 +19,11 @@ if (!class_exists('Tester\Assert')) {
 
 define("TEMP_DIR", __DIR__ . '/tmp');
 
-Tester\Helpers::purge(TEMP_DIR);
-
 Tester\Environment::setup();
 
 $loader = new Nette\Loaders\RobotLoader;
 $loader->addDirectory(__DIR__ . '/../src');
 $loader->addDirectory(__DIR__ . '/../vendor/mesour/sources/tests/classes');
 $loader->addDirectory(__DIR__ . '/../vendor/mesour/sources/tests/Entity');
-$loader->setCacheStorage(new Nette\Caching\Storages\FileStorage(__DIR__ . '/../tmp'));
+$loader->setCacheStorage(new Nette\Caching\Storages\FileStorage(__DIR__ . '/tmp'));
 $loader->register();
