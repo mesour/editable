@@ -59,4 +59,5 @@
     </rule>
     <exclude-pattern>tests/environment.php</exclude-pattern>
     <exclude-pattern>tests/bootstrap.php</exclude-pattern>
+    <exclude-pattern>tests/tmp</exclude-pattern>
 </ruleset>
