@@ -21,13 +21,9 @@ class PermissionsChecker
 {
 
 	const EDIT = 'edit';
-
 	const EDIT_FORM = 'edit_form';
-
 	const CREATE = 'create';
-
 	const REMOVE = 'remove';
-
 	const ATTACH = 'attach';
 
 	private static $methods = [

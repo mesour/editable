@@ -13,6 +13,8 @@
 
 # Tests
 
+Before first run, create `config.local.php` file. Can use `config.php` as template.
+
 Run command `vendor/bin/tester tests/ -s -c tests/php.ini --colors`
 
 # Code style

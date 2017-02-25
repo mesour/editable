@@ -2,7 +2,6 @@
 /vendor
 /composer.lock
 /node_modules
-/tmp
 /tests/log
 /tests/tmp
 /tests/environment.php
