@@ -2,7 +2,7 @@
 /**
  * This file is part of the Mesour Editable (http://components.mesour.com/component/editable)
  *
- * Copyright (c) 2016 Matouš Němec (http://mesour.com)
+ * Copyright (c) 2017 Matouš Němec (http://mesour.com)
  *
  * For full licence and copyright please view the file licence.md in root of this project
  */
@@ -14,7 +14,7 @@ use Mesour;
 /**
  * @author Matouš Němec (http://mesour.com)
  */
-class NumberField extends BaseField
+class NumberField extends ValidatedField implements IValidatedField
 {
 
 	use Mesour\Sources\Structures\Nullable;
@@ -26,6 +26,12 @@ class NumberField extends BaseField
 	private $decimalPoint = '.';
 
 	private $decimals = 0;
+
+	public function __construct($name)
+	{
+		parent::__construct($name);
+		$this->addRule(Mesour\Editable\Rules\RuleType::NUMERIC);
+	}
 
 	public function setUnit($unit)
 	{

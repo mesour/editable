@@ -2,7 +2,7 @@
 /**
  * This file is part of the Mesour Editable (http://components.mesour.com/component/editable)
  *
- * Copyright (c) 2016 Matouš Němec (http://mesour.com)
+ * Copyright (c) 2017 Matouš Němec (http://mesour.com)
  *
  * For full licence and copyright please view the file licence.md in root of this project
  */
@@ -64,26 +64,26 @@ abstract class BaseField implements IStructureField
 	}
 
 	/**
-	 * @param string $role
+	 * @param string|array $roles
 	 * @param Mesour\Components\Security\IAuthorizator $authorizator
 	 * @return bool
 	 */
-	public function isAllowedEdit($role, Mesour\Components\Security\IAuthorizator $authorizator)
+	public function isAllowedEdit($roles, Mesour\Components\Security\IAuthorizator $authorizator)
 	{
-		return $this->checkIsAllowed($this->editPermission, $role, $authorizator);
+		return $this->checkIsAllowed($this->editPermission, $roles, $authorizator);
 	}
 
 	/**
 	 * @param array|null $permission
-	 * @param mixed $role
+	 * @param string|array $roles
 	 * @param Mesour\Components\Security\IAuthorizator $authorizator
 	 * @return bool
 	 */
-	protected function checkIsAllowed($permission, $role, Mesour\Components\Security\IAuthorizator $authorizator)
+	protected function checkIsAllowed($permission, $roles, Mesour\Components\Security\IAuthorizator $authorizator)
 	{
 		return !$permission || Mesour\Components\Utils\Helpers::invokeArgs(
 			[$authorizator, 'isAllowed'],
-			array_merge([$role], $permission)
+			array_merge($roles, $permission)
 		);
 	}
 
@@ -134,12 +134,17 @@ abstract class BaseField implements IStructureField
 
 	public function toArray()
 	{
-		return [
+		$out = [
 			'name' => $this->getName(),
 			'title' => !$this->title ? $this->getName() : $this->title,
 			'type' => $this->getType(),
 			'params' => $this->parameters,
 		];
+
+		if ($this instanceof IValidatedField) {
+			$out['rules'] = $this->getRules();
+		}
+		return $out;
 	}
 
 	public function getAllowedMethods()

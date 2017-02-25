@@ -2,7 +2,7 @@
 /**
  * This file is part of the Mesour Editable (http://components.mesour.com/component/editable)
  *
- * Copyright (c) 2016 Matouš Němec (http://mesour.com)
+ * Copyright (c) 2017 Matouš Němec (http://mesour.com)
  *
  * For full licence and copyright please view the file licence.md in root of this project
  */
@@ -50,13 +50,13 @@ class ManyToManyField extends BaseElementField implements IManyToManyField
 	}
 
 	/**
-	 * @param string $role
+	 * @param string|array $roles
 	 * @param Mesour\Components\Security\IAuthorizator $authorizator
 	 * @return bool
 	 */
-	public function isAllowedAttach($role, Mesour\Components\Security\IAuthorizator $authorizator)
+	public function isAllowedAttach($roles, Mesour\Components\Security\IAuthorizator $authorizator)
 	{
-		return $this->checkIsAllowed($this->attachPermission, $role, $authorizator);
+		return $this->checkIsAllowed($this->attachPermission, $roles, $authorizator);
 	}
 
 	public function setReference(

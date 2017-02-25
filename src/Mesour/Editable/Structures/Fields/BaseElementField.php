@@ -2,7 +2,7 @@
 /**
  * This file is part of the Mesour Editable (http://components.mesour.com/component/editable)
  *
- * Copyright (c) 2016 Matouš Němec (http://mesour.com)
+ * Copyright (c) 2017 Matouš Němec (http://mesour.com)
  *
  * For full licence and copyright please view the file licence.md in root of this project
  */
@@ -73,13 +73,13 @@ abstract class BaseElementField extends BaseField implements IStructureElementFi
 	}
 
 	/**
-	 * @param mixed $role
+	 * @param mixed|array $roles
 	 * @param Mesour\Components\Security\IAuthorizator $authorizator
 	 * @return bool
 	 */
-	public function isAllowedCreate($role, Mesour\Components\Security\IAuthorizator $authorizator)
+	public function isAllowedCreate($roles, Mesour\Components\Security\IAuthorizator $authorizator)
 	{
-		return $this->checkIsAllowed($this->createPermission, $role, $authorizator);
+		return $this->checkIsAllowed($this->createPermission, $roles, $authorizator);
 	}
 
 	/**
@@ -94,13 +94,13 @@ abstract class BaseElementField extends BaseField implements IStructureElementFi
 	}
 
 	/**
-	 * @param string $role
+	 * @param string|array $roles
 	 * @param Mesour\Components\Security\IAuthorizator $authorizator
 	 * @return bool
 	 */
-	public function isAllowedRemove($role, Mesour\Components\Security\IAuthorizator $authorizator)
+	public function isAllowedRemove($roles, Mesour\Components\Security\IAuthorizator $authorizator)
 	{
-		return $this->checkIsAllowed($this->removePermission, $role, $authorizator);
+		return $this->checkIsAllowed($this->removePermission, $roles, $authorizator);
 	}
 
 	public function getReference()

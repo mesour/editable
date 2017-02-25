@@ -6,7 +6,7 @@ define('DISABLE_AUTOLOAD', true);
 require_once __DIR__ . '/../vendor/autoload.php';
 
 @mkdir(__DIR__ . "/log");
-@mkdir(__DIR__ . "/../tmp");
+@mkdir(__DIR__ . "/tmp");
 
 if (file_exists(__DIR__ . '/environment.php')) {
 	require_once __DIR__ . '/environment.php';
@@ -17,9 +17,7 @@ if (!class_exists('Tester\Assert')) {
 	exit(1);
 }
 
-define("TEMP_DIR", __DIR__ . '/../tmp');
-
-Tester\Helpers::purge(TEMP_DIR);
+define("TEMP_DIR", __DIR__ . '/tmp');
 
 Tester\Environment::setup();
 
@@ -27,5 +25,5 @@ $loader = new Nette\Loaders\RobotLoader;
 $loader->addDirectory(__DIR__ . '/../src');
 $loader->addDirectory(__DIR__ . '/../vendor/mesour/sources/tests/classes');
 $loader->addDirectory(__DIR__ . '/../vendor/mesour/sources/tests/Entity');
-$loader->setCacheStorage(new Nette\Caching\Storages\FileStorage(__DIR__ . '/../tmp'));
+$loader->setCacheStorage(new Nette\Caching\Storages\FileStorage(__DIR__ . '/tmp'));
 $loader->register();
