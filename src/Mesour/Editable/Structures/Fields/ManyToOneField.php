@@ -14,11 +14,15 @@ use Mesour;
 /**
  * @author Matouš Němec (http://mesour.com)
  */
-class ManyToOneField extends BaseElementField
+class ManyToOneField extends BaseElementField implements ICustomData
 {
 
+	use CustomData;
 	use Mesour\Sources\Structures\Nullable;
 
+	/**
+	 * @var bool
+	 */
 	private $editCurrentRow = false;
 
 	public function toArray()

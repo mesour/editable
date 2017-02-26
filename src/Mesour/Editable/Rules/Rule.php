@@ -50,8 +50,12 @@ class Rule implements \JsonSerializable
 		$this->arg = $arg;
 	}
 
-	public function isValid($value)
+	public function isValid($value, $nullable)
 	{
+		if ($nullable && Strings::length($value) === 0) {
+			return true;
+		}
+
 		$valid = true;
 		if ($this->type === RuleType::FILLED) {
 			$valid = Strings::length((string) $value) > 0;

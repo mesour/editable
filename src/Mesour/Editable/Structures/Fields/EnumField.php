@@ -14,12 +14,24 @@ use Mesour;
 /**
  * @author Matouš Němec (http://mesour.com)
  */
-class EnumField extends BaseField
+class EnumField extends BaseField implements Mesour\Editable\Rules\IValidated
 {
 
 	use Mesour\Sources\Structures\Nullable;
 
 	private $values = [];
+
+	public function setValues(array $values)
+	{
+		$this->values = [];
+		foreach ($values as $key => $value) {
+			$this->values[$key] = [
+				'key' => $key,
+				'name' => $value ? $value : $key,
+			];
+		}
+		return $this;
+	}
 
 	public function addValue($key, $name = null)
 	{
@@ -45,6 +57,20 @@ class EnumField extends BaseField
 		$out['nullable'] = $this->isNullable();
 
 		return $out;
+	}
+
+	/**
+	 * @param string $value
+	 * @return void
+	 * @throws Mesour\Editable\ValidatorException
+	 */
+	public function validate($value)
+	{
+		if (!$this->isNullable() && ($value === null || $value === '')) {
+			$exception = new Mesour\Editable\ValidatorException(Mesour\Editable\Rules\RuleHelper::$defaultText);
+			$exception->setFieldName($this->getName());
+			throw $exception;
+		}
 	}
 
 	public function getType()
