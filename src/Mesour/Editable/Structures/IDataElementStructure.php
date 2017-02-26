@@ -85,6 +85,12 @@ interface IDataElementStructure
 	public function hasField($name);
 
 	/**
+	 * @param string $name
+	 * @return void
+	 */
+	public function removeField($name);
+
+	/**
 	 * @return array
 	 */
 	public function toArray();

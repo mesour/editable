@@ -145,6 +145,12 @@ class DataElementStructure implements IDataElementStructure
 		return isset($this->fields[$name]);
 	}
 
+	public function removeField($name)
+	{
+		unset($this->fields[$name]);
+		return $this;
+	}
+
 	protected function createField($class, $name, $title, $identifier)
 	{
 		/** @var Fields\IStructureField $field */
