@@ -30,7 +30,6 @@ class NumberField extends ValidatedField
 	public function __construct($name)
 	{
 		parent::__construct($name);
-		$this->addRule(Mesour\Editable\Rules\RuleType::NUMERIC);
 	}
 
 	public function setUnit($unit)
