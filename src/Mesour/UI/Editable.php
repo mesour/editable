@@ -10,7 +10,10 @@
 namespace Mesour\UI;
 
 use Mesour;
+use Mesour\Editable\Structures\Fields\IStructureElementField;
+use Mesour\Editable\Structures\Fields\IStructureField;
 use Mesour\Editable\Structures\PermissionsChecker;
+use Mesour\Editable\Structures\Reference;
 use Nette\Utils\Json;
 use Nette\Utils\Strings;
 
@@ -18,11 +21,12 @@ use Nette\Utils\Strings;
  * @author Matouš Němec (http://mesour.com)
  *
  * @method null onRender(Editable $editable)
- * @method null onCreate(\Mesour\Editable\Structures\Fields\IStructureElementField $field, array $newValues, $identifier = null, array $params = [])
- * @method null onRemove(\Mesour\Editable\Structures\Fields\IStructureElementField $field, $value, $identifier = null)
- * @method null onAttach(\Mesour\Editable\Structures\Fields\IStructureElementField $field, \Mesour\Editable\Structures\Reference $reference, $identifier = null, array $params = [])
- * @method null onEditField(\Mesour\Editable\Structures\Fields\IStructureField $field, $newValue, $oldValue = null, $identifier = null, array $params = [])
- * @method null onEditElement(\Mesour\Editable\Structures\Fields\IStructureElementField $field, array $values, array $oldValues, \Mesour\Editable\Structures\Reference $reference, $identifier = null, array $params = [])
+ * @method null onCreate(IStructureElementField $field, array $newValues, $identifier = null, array $params = [])
+ * @method null onRemove(IStructureElementField $field, $value, $identifier = null)
+ * @method null onAttach(IStructureElementField $field, Reference $reference, $identifier = null, array $params = [])
+ * @method null onEditField(IStructureField $field, $newValue, $oldValue = null, $identifier = null, array $params = [])
+ * @method null onEditElement(IStructureElementField $field, array $values, array $oldValues, Reference $reference, $identifier = null, array $params = [])
+ * @method null onCreateReferencedSource(Mesour\Sources\ISource $source, string $table)
  */
 class Editable extends Mesour\Components\Control\AttributesControl
 {
@@ -58,6 +62,8 @@ class Editable extends Mesour\Components\Control\AttributesControl
 	public $onEditField = [];
 
 	public $onEditElement = [];
+
+	public $onCreateReferencedSource = [];
 
 	protected $defaults = [
 		self::WRAPPER => [
@@ -373,20 +379,25 @@ class Editable extends Mesour\Components\Control\AttributesControl
 		}
 
 		if ($data === null) {
-			$data = $dataStructure->getSource()
-				->getReferencedSource($table)
+			$data = $this->createReferencedSource($dataStructure->getSource(), $table)
 				->fetchAll();
 		}
 
 		$this->getPayload()->set('data', $this->fixDataForPayload($data));
 
 		if ($referencedTable) {
-			$referencedSource = $dataStructure->getSource()
-				->getReferencedSource($referencedTable);
+			$referencedSource = $this->createReferencedSource($dataStructure->getSource(), $referencedTable);
 			$this->getPayload()->set('reference', $this->fixDataForPayload($referencedSource->fetchAll()));
 		}
 
 		$this->getPayload()->sendPayload();
+	}
+
+	private function createReferencedSource(Mesour\Sources\ISource $source, $table)
+	{
+		$referencedSource = $source->getReferencedSource($table);
+		$this->onCreateReferencedSource($referencedSource, $table);
+		return $referencedSource;
 	}
 
 	public function handleDataStructure()
@@ -445,7 +456,7 @@ class Editable extends Mesour\Components\Control\AttributesControl
 			'select' => $this->getTranslator()->translate('Select...'),
 			'selectOne' => $this->getTranslator()->translate('Select one'),
 			'selectExisting' => $this->getTranslator()->translate('Select from existing'),
-			'allSelected' => $this->getTranslator()->translate('All existing companies are attachet to this client...'),
+			'allSelected' => $this->getTranslator()->translate('All existing rows are attached...'),
 			'attachExisting' => $this->getTranslator()->translate('Attach existing'),
 			'createNew' => $this->getTranslator()->translate('Create new'),
 			'dataSaved' => $this->getTranslator()->translate('Successfuly saved'),

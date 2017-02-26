@@ -79,7 +79,7 @@ class TranslatorTest extends BaseTestCase
 			'Select...' => '__translate_01',
 			'Select one' => '__translate_02',
 			'Select from existing' => '__translate_03',
-			'All existing companies are attachet to this client...' => '__translate_04',
+			'All existing rows are attached...' => '__translate_04',
 			'Attach existing' => '__translate_05',
 			'Create new' => '__translate_06',
 			'Successfuly saved' => '__translate_07',
