@@ -14,24 +14,19 @@ use Mesour;
 /**
  * @author Matouš Němec (http://mesour.com)
  */
-class OneToOneField extends BaseElementField implements ICustomData
+interface ICustomData extends IStructureElementField
 {
 
-	use CustomData;
-	use Mesour\Sources\Structures\Nullable;
+	public function useCustomData(array $customData = []);
 
-	public function toArray()
-	{
-		$out = parent::toArray();
+	/**
+	 * @return bool
+	 */
+	public function isUsedCustomData();
 
-		$out['nullable'] = $this->isNullable();
-
-		return $out;
-	}
-
-	public function getType()
-	{
-		return Mesour\Sources\Structures\Columns\IColumnStructure::ONE_TO_ONE;
-	}
+	/**
+	 * @return array
+	 */
+	public function getCustomData();
 
 }

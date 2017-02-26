@@ -58,7 +58,7 @@ abstract class ValidatedField extends BaseField implements IValidatedField
 	public function validate($value)
 	{
 		foreach ($this->rules as $rule) {
-			if (!$rule->isValid($value)) {
+			if (!$rule->isValid($value, method_exists($this, 'isNullable') && $this->isNullable())) {
 				$exception = new ValidatorException($rule->getMessage());
 				$exception->setFieldName($this->getName());
 				throw $exception;

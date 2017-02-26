@@ -19,6 +19,8 @@ abstract class BaseElementField extends BaseField implements IStructureElementFi
 
 	protected $reference;
 
+	protected $referenceRequired = true;
+
 	private $createNewRow = false;
 
 	private $removeRow = false;
@@ -26,6 +28,22 @@ abstract class BaseElementField extends BaseField implements IStructureElementFi
 	private $createPermission;
 
 	private $removePermission;
+
+	/**
+	 * @param bool $referenceRequired
+	 */
+	public function setReferenceRequired($referenceRequired)
+	{
+		$this->referenceRequired = $referenceRequired;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isReferenceRequired()
+	{
+		return $this->referenceRequired;
+	}
 
 	public function enableCreateNewRow()
 	{
@@ -128,15 +146,23 @@ abstract class BaseElementField extends BaseField implements IStructureElementFi
 
 		$out = parent::toArray();
 
-		if (!$this->reference) {
-			throw new Mesour\InvalidStateException(
-				sprintf(
-					"Element field require reference. Is registered relational column '%s' on source data structure?",
-					$this->getName()
-				)
-			);
+		if ($this->referenceRequired) {
+			if (!$this->reference) {
+				throw new Mesour\InvalidStateException(
+					sprintf(
+						"Element field require reference. Is registered relational column '%s' on source data structure?",
+						$this->getName()
+					)
+				);
+			}
+			$out['reference'] = $this->reference;
+		} else {
+			$out['reference'] = [
+				'table' => isset($this->reference['table']) ? $this->reference['table'] : null,
+				'primary_key' => isset($this->reference['primary_key']) ? $this->reference['primary_key'] : null,
+				'column' => isset($this->reference['column']) ? $this->reference['column'] : null,
+			];
 		}
-		$out['reference'] = $this->reference;
 
 		return $out;
 	}

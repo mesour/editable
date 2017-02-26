@@ -90,7 +90,13 @@ $groupsElement = $structure->getElement('groups');
 $groupsElement->addText('name', 'Name')
 	->addRule(RuleType::PATTERN, 'Test email message.', '[0-9a-z]{6}');
 
-$groupsElement->addText('type', 'Type');
+$groupsElement->addEnum('type', 'Type')
+	->setNullable(false)
+	->setValues([
+		null => '--',
+		'first' => 'First',
+		'second' => 'Second',
+	]);
 
 $groupsElement->addDate('date', 'Date')
 	->setFormat('Y-m-d H:i:s');
@@ -126,6 +132,11 @@ $walletElement->addNumber('amount', 'Amount')
 
 $walletElement->addEnum('currency', 'Currency');
 
+$domains = $structure->getOrCreateElement('domains', 'id');
+
+$domains->addText('url', 'Url')
+	->addRule(RuleType::URL, 'Url is not valid');
+
 function createForUser(\Mesour\Editable\Structures\IDataStructure $structure, $userId)
 {
 	$structure->addText('name', 'Name', $userId)
@@ -134,7 +145,9 @@ function createForUser(\Mesour\Editable\Structures\IDataStructure $structure, $u
 		->setEditPermission('user-editable', 'name-edit');
 
 	$structure->addText('surname', 'Surname', $userId)
-		->setEditPermission('user-editable', 'surname-edit');
+		->setNullable()
+		->setEditPermission('user-editable', 'surname-edit')
+		->addRule(RuleType::URL, 'Surname must be valid URL.');
 
 	$structure->addText('email', 'Email', $userId)
 		->setEditPermission('user-editable', 'email-edit');
@@ -151,13 +164,26 @@ function createForUser(\Mesour\Editable\Structures\IDataStructure $structure, $u
 		->setEditPermission('user-editable', 'last_login-edit');
 
 	$structure->addEnum('role', 'Role', $userId)
-		->addValue('admin', 'Admin')
-		->addValue('moderator', 'Moderator')
+		->setValues([
+			'admin' => 'Admin',
+			'moderator' => 'Moderator',
+		])
 		->setEditPermission('user-editable', 'role-edit');
 
 	$structure->addBool('has_pro', 'Has PRO', $userId)
 		->setDescription('Has PRO')
 		->setEditPermission('user-editable', 'has_pro-edit');
+
+	$domains = $structure->addOneToOne('domains', 'Domains', $userId);
+	$domains->setReference('domains', 'id', null, '{url}');
+	$domains->enableCreateNewRow();
+	$domains->enableRemoveRow();
+	$domains->useCustomData([
+		[
+			'id' => 0,
+			'url' => 'http://example.com',
+		]
+	]);
 
 	$structure->addOneToOne('wallet', 'Wallet', $userId)
 		->enableRemoveRow()
@@ -430,6 +456,29 @@ $currentUserId = $currentUser['id'];
 							) : null; ?>
 							<td data-editable="last_login" data-id="<?php echo $currentUserId; ?>" data-value="<?php echo $lastLogin; ?>" title="Enter birth date">
 								<?php echo $lastLogin ? $lastLogin : '<i>none</i>'; ?>
+							</td>
+						</tr>
+						<tr>
+							<th>Domains</th>
+							<td>
+								<ul>
+									<li data-editable="domains" data-no-action="true">
+										<span data-editable="domains" data-id="<?php echo $currentUserId; ?>"
+										      data-value="0">example.com</span>
+										<a href="#" class="fa fa-remove" data-editable="domains"
+										   data-id="<?php echo $currentUserId; ?>"
+										   data-value="0"
+										   data-confirm="Really delete domain example.com?"
+										   data-is-remove="true"></a>
+									</li>
+									<li>
+										<a data-editable="domains" data-is-add="true"
+										   data-id="<?php echo $currentUserId; ?>" class="add-new">
+											<i class="fa fa-plus"></i>
+											Add new domain
+										</a>
+									</li>
+								</ul>
 							</td>
 						</tr>
 						<tr>

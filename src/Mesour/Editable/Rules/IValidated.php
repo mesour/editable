@@ -7,21 +7,21 @@
  * For full licence and copyright please view the file licence.md in root of this project
  */
 
-namespace Mesour\Editable\Structures\Fields;
+namespace Mesour\Editable\Rules;
 
 use Mesour;
 
 /**
  * @author Matouš Němec (http://mesour.com)
  */
-class OneToManyField extends BaseElementField implements ICustomData
+interface IValidated
 {
 
-	use CustomData;
-
-	public function getType()
-	{
-		return Mesour\Sources\Structures\Columns\IColumnStructure::ONE_TO_MANY;
-	}
+	/**
+	 * @param string $value
+	 * @return void
+	 * @throws Mesour\Editable\ValidatorException
+	 */
+	public function validate($value);
 
 }

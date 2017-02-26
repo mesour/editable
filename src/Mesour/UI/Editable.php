@@ -200,7 +200,7 @@ class Editable extends Mesour\Components\Control\AttributesControl
 		try {
 			$currentField = $this->getDataStructure()->getField($name);
 
-			if ($currentField instanceof Mesour\Editable\Structures\Fields\IValidatedField) {
+			if ($currentField instanceof Mesour\Editable\Rules\IValidated) {
 				$currentField->validate($newValue);
 			}
 
@@ -236,7 +236,7 @@ class Editable extends Mesour\Components\Control\AttributesControl
 			foreach ($this->getDataStructure()->getElement($fieldReference['table'])->getFields() as $field) {
 				if (isset($values[$field->getName()])) {
 					$newValue = $this->fixValue($field, $values[$field->getName()]);
-					if ($field instanceof Mesour\Editable\Structures\Fields\IValidatedField) {
+					if ($field instanceof Mesour\Editable\Rules\IValidated) {
 						$field->validate($newValue);
 					}
 					$values[$field->getName()] = $newValue;
@@ -289,13 +289,13 @@ class Editable extends Mesour\Components\Control\AttributesControl
 
 			PermissionsChecker::check(PermissionsChecker::CREATE, $this, $currentField);
 
-			$reference = $currentField->getReference();
+			$fieldReference = $currentField->getReference();
 
 			$newValues = [];
-			foreach ($this->getDataStructure()->getElement($reference['table'])->getFields() as $field) {
+			foreach ($this->getDataStructure()->getElement($fieldReference['table'])->getFields() as $field) {
 				if (isset($values[$field->getName()])) {
 					$value = $this->fixValue($field, $values[$field->getName()]);
-					if ($field instanceof Mesour\Editable\Structures\Fields\IValidatedField) {
+					if ($field instanceof Mesour\Editable\Rules\IValidated) {
 						$field->validate($value);
 					}
 					$newValues[$field->getName()] = $value;
@@ -362,15 +362,26 @@ class Editable extends Mesour\Components\Control\AttributesControl
 
 	public function handleReferenceData($table, $referencedTable = null)
 	{
-		$source = $this->getDataStructure()
-			->getSource()
-			->getReferencedSource($table);
+		$dataStructure = $this->getDataStructure();
 
-		$this->getPayload()->set('data', $this->fixDataForPayload($source->fetchAll()));
+		$data = null;
+		if ($dataStructure->hasField($table)) {
+			$field = $dataStructure->getField($table);
+			if ($field instanceof Mesour\Editable\Structures\Fields\ICustomData && $field->isUsedCustomData()) {
+				$data = $field->getCustomData();
+			}
+		}
+
+		if ($data === null) {
+			$data = $dataStructure->getSource()
+				->getReferencedSource($table)
+				->fetchAll();
+		}
+
+		$this->getPayload()->set('data', $this->fixDataForPayload($data));
 
 		if ($referencedTable) {
-			$referencedSource = $this->getDataStructure()
-				->getSource()
+			$referencedSource = $dataStructure->getSource()
 				->getReferencedSource($referencedTable);
 			$this->getPayload()->set('reference', $this->fixDataForPayload($referencedSource->fetchAll()));
 		}

@@ -14,15 +14,8 @@ use Mesour;
 /**
  * @author Matouš Němec (http://mesour.com)
  */
-interface IValidatedField extends IStructureField
+interface IValidatedField extends IStructureField, Mesour\Editable\Rules\IValidated
 {
-
-	/**
-	 * @param string $value
-	 * @return void
-	 * @throws Mesour\Editable\ValidatorException
-	 */
-	public function validate($value);
 
 	/**
 	 * @param string $type
