@@ -23,6 +23,8 @@ abstract class BaseField implements IStructureField
 
 	private $disabled = false;
 
+	private $inline = false;
+
 	private $parameters = [];
 
 	private $identifiers = [];
@@ -50,6 +52,20 @@ abstract class BaseField implements IStructureField
 	public function isDisabled()
 	{
 		return $this->disabled;
+	}
+
+	public function setInline($inline = true)
+	{
+		$this->inline = $inline;
+		return $this;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isInline()
+	{
+		return $this->inline;
 	}
 
 	/**
@@ -138,6 +154,7 @@ abstract class BaseField implements IStructureField
 			'name' => $this->getName(),
 			'title' => !$this->title ? $this->getName() : $this->title,
 			'type' => $this->getType(),
+			'inline' => $this->isInline() ? 'true' : 'false',
 			'params' => $this->parameters,
 		];
 

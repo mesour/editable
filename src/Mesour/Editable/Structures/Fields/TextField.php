@@ -21,9 +21,17 @@ class TextField extends ValidatedField
 
 	private $hasTextarea = false;
 
+	private $stripHtml = true;
+
 	public function setTextarea($textarea = true)
 	{
 		$this->hasTextarea = $textarea;
+		return $this;
+	}
+
+	public function stripHtml($html = true)
+	{
+		$this->stripHtml = $html;
 		return $this;
 	}
 
@@ -38,6 +46,7 @@ class TextField extends ValidatedField
 
 		$out['nullable'] = $this->isNullable();
 		$out['hasTextarea'] = !$this->hasTextarea ? 'false' : 'true';
+		$out['stripHtml'] = $this->stripHtml ? 'true' : 'false';
 
 		return $out;
 	}

@@ -28,6 +28,17 @@ interface IStructureField
 	public function isDisabled();
 
 	/**
+	 * @param bool $inline
+	 * @return mixed
+	 */
+	public function setInline($inline = true);
+
+	/**
+	 * @return bool
+	 */
+	public function isInline();
+
+	/**
 	 * @param string $role
 	 * @param Mesour\Components\Security\IAuthorizator $authorizator
 	 * @return bool
