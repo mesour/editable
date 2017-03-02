@@ -79,6 +79,11 @@ abstract class BaseElementField extends BaseField implements IStructureElementFi
 		return $this->removeRow;
 	}
 
+	public function setInline($inline = true)
+	{
+		throw new Mesour\NotSupportedException;
+	}
+
 	/**
 	 * @param string $resource
 	 * @param string $privilege

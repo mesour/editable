@@ -83,6 +83,8 @@ $walletColumn->setPattern('{amount}');
 $structure = \Mesour\Editable\Structures\DataStructure::fromSource($source);
 
 $structure->addText('name', 'Name')
+	->stripHtml(false)
+	->setInline()
 	->addRule(RuleType::EMAIL, 'Test email message.');
 
 $groupsElement = $structure->getElement('groups');
@@ -434,7 +436,7 @@ $currentUserId = $currentUser['id'];
 						<tr>
 							<th>Name</th>
 							<td data-editable="name" data-id="<?php echo $currentUserId; ?>" title="Enter firstname">
-								<?php echo $currentUser['name']; ?>
+								<span><?php echo $currentUser['name']; ?></span>
 							</td>
 						</tr>
 						<tr>
