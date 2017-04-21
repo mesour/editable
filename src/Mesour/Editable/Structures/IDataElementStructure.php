@@ -68,6 +68,15 @@ interface IDataElementStructure
 	public function addBool($name, $title = null, $identifier = null);
 
 	/**
+	 * @param string $type Custom type
+	 * @param string $name
+	 * @param null|string $title
+	 * @param null|mixed $identifier
+	 * @return Fields\CustomField
+	 */
+	public function addCustom($type, $name, $title = null, $identifier = null);
+
+	/**
 	 * @return Mesour\Editable\Structures\Fields\IStructureField[]
 	 */
 	public function getFields();
