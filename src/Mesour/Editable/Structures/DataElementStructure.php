@@ -103,6 +103,21 @@ class DataElementStructure implements IDataElementStructure
 	}
 
 	/**
+	 * @param string $type Custom type
+	 * @param string $name
+	 * @param null|string $title
+	 * @param null|mixed $identifier
+	 * @return Fields\CustomField
+	 */
+	public function addCustom($type, $name, $title = null, $identifier = null)
+	{
+		/** @var Fields\CustomField $field */
+		$field = $this->createField(Fields\CustomField::class, $name, $title, $identifier);
+		$field->setCustomType($type);
+		return $field;
+	}
+
+	/**
 	 * @return Fields\IStructureField[]
 	 */
 	public function getFields()

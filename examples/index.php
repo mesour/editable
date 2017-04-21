@@ -87,6 +87,9 @@ $structure->addText('name', 'Name')
 	->setInline()
 	->addRule(RuleType::EMAIL, 'Test email message.');
 
+$structure->addCustom('special', 'special', 'Special')
+	->setParameter('test', ['value' => 123]);
+
 $groupsElement = $structure->getElement('groups');
 
 $groupsElement->addText('name', 'Name')
@@ -124,6 +127,7 @@ $companiesElement = $structure->getElement('companies');
 $companiesElement->addText('name', 'Name');
 $companiesElement->addText('reg_num', 'Reg. number');
 $companiesElement->addBool('verified', 'Verified');
+$companiesElement->addCustom('special', 'special', 'Special');
 
 $walletElement = $structure->getElement('wallets');
 
@@ -146,10 +150,10 @@ function createForUser(\Mesour\Editable\Structures\IDataStructure $structure, $u
 		->addRule(\Mesour\Editable\Rules\RuleType::FILLED, 'Test error message.')
 		->setEditPermission('user-editable', 'name-edit');
 
-	$structure->addText('surname', 'Surname', $userId)
+	$structure->addNumber('surname', 'Surname', $userId)
 		->setNullable()
 		->setEditPermission('user-editable', 'surname-edit')
-		->addRule(RuleType::URL, 'Surname must be valid URL.');
+		->addRule(RuleType::NUMERIC, 'Surname must be number.');
 
 	$structure->addText('email', 'Email', $userId)
 		->setEditPermission('user-editable', 'email-edit');
@@ -368,7 +372,7 @@ $editable->onEditElement[] = function (
 			->where('id = ?', $reference->getToValue())
 			->update($values);
 	} elseif ($field->getName() === 'companies') {
-		unset($values['id']);
+		unset($values['id'], $values['special'], $values['special-select']);
 		$context->table('companies')
 			->where('id = ?', $reference->getToValue())
 			->update($values);
@@ -392,7 +396,9 @@ $editable->onEditField[] = function (
 	$identifier = null,
 	array $params = []
 ) use ($context, $source) {
-	if ($field->getName() === 'group') {
+	if ($field->getName() === 'special') {
+		dump(func_get_args());
+	} elseif ($field->getName() === 'group') {
 		$data = [
 			'group_id' => !$newValue ? null : $newValue,
 		];
@@ -449,6 +455,12 @@ $currentUserId = $currentUser['id'];
 							<th>Email</th>
 							<td data-editable="email" data-id="<?php echo $currentUserId; ?>" title="Enter email">
 								<?php echo $currentUser['email']; ?>
+							</td>
+						</tr>
+						<tr>
+							<th>Special</th>
+							<td data-editable="special" data-id="<?php echo $currentUserId; ?>" title="Enter email">
+								Static test
 							</td>
 						</tr>
 						<tr>
@@ -620,7 +632,7 @@ $currentUserId = $currentUser['id'];
         integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
         crossorigin="anonymous"></script>
 
-<script src="../node_modules/eonasdan-bootstrap-datetimepicker/node_modules/moment/min/moment.min.js"></script>
+<script src="../node_modules/moment/min/moment.min.js"></script>
 <script src="../node_modules/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
 
 <script src="../node_modules/mesour-editable/dist/js/mesour.editable.js"></script>
@@ -628,6 +640,116 @@ $currentUserId = $currentUser['id'];
 <script>
 	$(function() {
 		var COMPONENT_NAME = 'mesourApp-editableTest';
+
+		var CustomField = function(fieldStructure, editableClosure, element, parameters, identifier, value) {
+			var parameters = parameters || {},
+				oldValue = value ? value : $.trim(element.html()),
+				rules = fieldStructure['rules'] || [],
+				isNullable = fieldStructure['nullable'],
+				fieldName = fieldStructure['name'],
+				getEditable = function() {
+					return editableClosure();
+				},
+				_this = this;
+
+			var group = $('<div class="input-group input-group-sm">');
+
+			var select = $('<select id="lunch" class="form-control">');
+			select.append('<option>Baby Back Ribs</option>');
+			group.append(select);
+
+			var input = $('<input type="text" value="' + oldValue + '" class="form-control" name="' + fieldName + '">');
+			group.append(input);
+
+			input.on('keydown.mesour-editable', function(e) {
+				if (e.keyCode === 13) {
+					getEditable().save(fieldName, identifier);
+				} else if (e.keyCode === 27) {
+					_this.reset();
+				}
+			});
+
+			var popover = getEditable()
+				.createEditablePopover(fieldStructure, identifier, editableClosure, element, group);
+
+			popover.onSave(function() {
+				var isValid = mesour.editable.validators.validate(
+					rules,
+					input.val(),
+					input,
+					true,
+					isNullable,
+					function() {return _this}
+				);
+				if (isValid) {
+					getEditable().save(fieldName, identifier);
+				}
+			});
+			popover.onReset(function() {
+				_this.reset();
+			});
+
+			input.focus();
+
+			this.getElement = function() {
+				return element;
+			};
+
+			this.getValue = function() {
+				return {
+					oldValue: oldValue,
+					value: {
+						'input': input.val(),
+						'select': select.val()
+					},
+					params: parameters
+				};
+			};
+
+			this.reset = function() {
+				popover.destroy();
+			};
+
+			this.save = function() {
+				popover.destroy();
+				element.empty().text(input.val());
+			};
+		};
+
+		var Field = function() {
+
+			this.getFieldInstance = function(fieldStructure, editableClosure, element, parameters, identifier, value) {
+				return new CustomField(fieldStructure, editableClosure, element, parameters, identifier, value);
+			};
+
+			this.createFormElement = function(group, id, fieldStructure, editableClosure) {
+				var title = fieldStructure['title'],
+					name = fieldStructure['name'];
+
+				var label = jQuery('<label for="' + id + '">' + title + '</label>');
+				group.append(label);
+
+				var inputGroup = $('<div class="input-group">');
+
+				var select = $('<select id="lunch" class="form-control" name="' + name + '-select">');
+				select.append('<option>--</option>');
+				select.append('<option value="1">Baby Back Ribs</option>');
+				select.append('<option value="2">Foo value</option>');
+				inputGroup.append(select);
+
+				var input = $('<input type="text" class="form-control" id="' + id + '" name="' + name + '">');
+				inputGroup.append(input);
+
+				group.append(inputGroup);
+
+				//textField.data('rules', fieldStructure['rules'] || []);
+			};
+
+		};
+
+		window.mesour = !window.mesour ? {} : window.mesour;
+		window.mesour.editable = !window.mesour.editable ? [] : window.mesour.editable;
+		window.mesour.editable.push(['addCustomField', COMPONENT_NAME, 'special', new Field()]);
 
 		$(document).on('click', '[data-editable]', function(e) {
 			var $this = $(this);
