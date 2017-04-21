@@ -17,6 +17,8 @@ use Mesour;
 class CustomField extends BaseField
 {
 
+	const TYPE_CUSTOM = 'custom';
+
 	use Mesour\Sources\Structures\Nullable;
 
 	/**
@@ -36,7 +38,7 @@ class CustomField extends BaseField
 
 	public function getType()
 	{
-		return Mesour\Sources\Structures\Columns\IColumnStructure::CUSTOM;
+		return static::TYPE_CUSTOM;
 	}
 
 	public function toArray()
