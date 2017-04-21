@@ -25,7 +25,7 @@ class CustomField extends BaseField
 	private $customType;
 
 	/**
-	 * @param string $type
+	 * @param string $customType
 	 * @return $this
 	 */
 	public function setCustomType($customType)
