@@ -99,8 +99,10 @@ $groupsElement->addEnum('type', 'Type')
 	->setNullable(false)
 	->setValues([
 		null => '--',
-		'first' => 'First',
-		'second' => 'Second',
+		'Group' => [
+			'first' => 'First',
+			'second' => 'Second',
+		],
 	]);
 
 $groupsElement->addDate('date', 'Date')
