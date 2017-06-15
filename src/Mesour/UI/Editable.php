@@ -486,7 +486,7 @@ class Editable extends Mesour\Components\Control\AttributesControl
 		} elseif ($elementField->getType() === Mesour\Sources\Structures\Columns\IColumnStructure::ENUM) {
 			/** @var Mesour\Editable\Structures\Fields\EnumField $elementField */
 			$values = $elementField->getValues();
-			$isValueAllowed = isset($values[$value]);
+			$isValueAllowed = $this->isValueAllowed($values, $value);
 			if ($elementField->isNullable() && !$value && !$isValueAllowed) {
 				return null;
 			}
@@ -543,6 +543,20 @@ class Editable extends Mesour\Components\Control\AttributesControl
 			return !$value || $value === 'false' ? false : true;
 		}
 		return $value;
+	}
+
+	private function isValueAllowed(array $values, $currentValue)
+	{
+		if (array_key_exists($currentValue, $values)) {
+			return true;
+		}
+
+		foreach ($values as $value) {
+			if (isset($value['name']) && is_array($value['name']) && array_key_exists($currentValue, $value['name'])) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	protected function processError(Mesour\Editable\ValidatorException $exception)

@@ -171,8 +171,13 @@ function createForUser(\Mesour\Editable\Structures\IDataStructure $structure, $u
 
 	$structure->addEnum('role', 'Role', $userId)
 		->setValues([
-			'admin' => 'Admin',
-			'moderator' => 'Moderator',
+				'Main' => [
+					'admin' => 'Admin',
+					'moderator' => 'Moderator',
+				],
+				'Other' => [
+					'test' => 'Test',
+				],
 		])
 		->setEditPermission('user-editable', 'role-edit');
 
